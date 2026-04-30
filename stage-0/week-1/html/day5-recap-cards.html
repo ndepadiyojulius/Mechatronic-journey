@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 5 Done — Nde Julius</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #050608;
+    font-family: 'Barlow Condensed', sans-serif;
+    padding: 24px 16px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .page-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px;
+    color: #333; text-transform: uppercase; text-align: center;
+  }
+  .page-label span { color: #f59e0b; }
+
+  .card {
+    width: 100%; max-width: 360px;
+    aspect-ratio: 9 / 16;
+    border-radius: 20px; overflow: hidden;
+    position: relative;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    padding: 28px 24px; flex-shrink: 0;
+  }
+
+  .card-num {
+    position: absolute; top: 16px; right: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: rgba(255,255,255,0.15);
+    letter-spacing: 1px; z-index: 2;
+  }
+
+  /* BACKGROUNDS */
+  .c1 { background: #09070a; }
+  .c1::before {
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 80% 50% at 85% 8%, rgba(245,158,11,0.25) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 10% 90%, rgba(239,68,68,0.12) 0%, transparent 50%);
+    pointer-events:none;
+  }
+
+  .c2 { background: #080a07; }
+  .c2::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 65% 55% at 50% 10%, rgba(16,185,129,0.15) 0%, transparent 60%);
+    pointer-events:none;
+  }
+
+  .c3 { background: #080a0c; }
+  .c3::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at top right, rgba(245,158,11,0.18) 0%, transparent 55%);
+    pointer-events:none;
+  }
+
+  .c4 { background: #090810; }
+  .c4::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at bottom left, rgba(139,92,246,0.15) 0%, transparent 55%);
+    pointer-events:none;
+  }
+
+  .c5 { background: #0a0808; }
+  .c5::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at center, rgba(239,68,68,0.13) 0%, transparent 55%);
+    pointer-events:none;
+  }
+
+  .c6 { background: #07090c; }
+  .c6::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at top, rgba(59,130,246,0.14) 0%, transparent 55%);
+    pointer-events:none;
+  }
+
+  .c7 { background: #080a07; }
+  .c7::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at bottom right, rgba(16,185,129,0.14) 0%, transparent 55%);
+    pointer-events:none;
+  }
+
+  .c8 { background: #07080c; }
+  .c8::before {
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 30%, rgba(245,158,11,0.14) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 80% 75%, rgba(16,185,129,0.1) 0%, transparent 50%);
+    pointer-events:none;
+  }
+
+  .grid {
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events:none; z-index:0;
+  }
+
+  .big-num {
+    font-family:'Bebas Neue',sans-serif;
+    letter-spacing:-4px; line-height:1;
+    position:absolute; pointer-events:none; z-index:0;
+  }
+
+  .top { z-index:1; }
+  .mid { z-index:1; flex:1; display:flex; flex-direction:column; justify-content:center; gap:11px; }
+  .bot { z-index:1; }
+
+  .tag {
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px; letter-spacing:3px; text-transform:uppercase;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .dot { width:6px; height:6px; border-radius:50%; }
+
+  .code-block {
+    background:rgba(0,0,0,0.6);
+    border:1px solid rgba(255,255,255,0.07);
+    border-radius:10px;
+    padding:12px 14px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px; line-height:1.75; z-index:1;
+  }
+  .kw{color:#ff7b72;} .fn{color:#d2a8ff;} .str{color:#79c0ff;}
+  .num{color:#f97316;} .cmt{color:#4a5568;font-style:italic;}
+  .ty{color:#f59e0b;} .op{color:#f5c842;}
+
+  .author { display:flex; align-items:center; gap:10px; }
+  .av { width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:12px;flex-shrink:0; }
+  .av-name { font-size:12px;font-weight:700;color:#fff; }
+  .av-role { font-size:10px;color:#555;font-weight:300; }
+
+  .info-row {
+    display:flex; align-items:center; gap:10px;
+    background:rgba(255,255,255,0.025);
+    border:1px solid rgba(255,255,255,0.05);
+    border-radius:7px; padding:9px 12px;
+  }
+
+  .pill {
+    display:inline-block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px; padding:4px 9px;
+    border-radius:4px; margin:3px 2px; border:1px solid;
+  }
+
+  /* captions */
+  .caption-box {
+    width:100%; max-width:360px;
+    background:#0e1018; border:1px solid #1c1f2b;
+    border-radius:14px; overflow:hidden;
+  }
+  .cap-head { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid #1c1f2b; }
+  .cap-title { font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:2px; }
+  .copy-btn { margin-left:auto; background:#1c1f2b; border:none; color:#fff; font-family:'JetBrains Mono',monospace; font-size:9px; padding:5px 10px; border-radius:4px; cursor:pointer; letter-spacing:1px; text-transform:uppercase; transition:all 0.2s; }
+  .copy-btn:hover { background:#f59e0b; color:#000; }
+  .cap-body { padding:16px; font-size:13.5px; line-height:1.8; color:#bbb; white-space:pre-line; }
+  .cap-body strong { color:#f59e0b; }
+  .cap-tags { padding:8px 16px 14px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#f59e0b; opacity:0.6; line-height:1.9; }
+
+  .divider { width:100%; max-width:360px; display:flex; align-items:center; gap:12px; color:#222; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; }
+  .divider::before,.divider::after { content:''; flex:1; height:1px; background:#1a1a22; }
+</style>
+</head>
+<body>
+
+<div class="page-label">Nde Julius · <span>Day 5 + Bonus — Week 1 Complete 🏁</span></div>
+<div class="page-label" style="color:#555; margin-bottom:4px;">Scroll · Screenshot each · Post</div>
+
+<!-- ══ CARD 1: COVER ══ -->
+<div class="card c1">
+  <div class="grid"></div>
+  <div class="big-num" style="font-size:250px; color:rgba(245,158,11,0.06); bottom:-40px; right:-25px;">5</div>
+
+  <div class="top">
+    <div class="tag" style="color:#f59e0b;">
+      <div class="dot" style="background:#f59e0b;"></div>
+      STAGE 0 · WEEK 1 · COMPLETE 🏁
+    </div>
+  </div>
+  <div class="card-num">1 / 8</div>
+
+  <div class="mid" style="gap:10px;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#444; letter-spacing:2px;">MECHATRONICS JOURNEY</div>
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:72px; line-height:0.85; letter-spacing:2px; color:#fff;">DAY<br><span style="color:#f59e0b;">FIVE</span><br><span style="font-size:32px; color:#10b981; letter-spacing:3px;">WEEK 1 DONE ✓</span></div>
+
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; margin-top:4px; line-height:1.7;">2 days of focused work<br>Console calculator + GUI calculator</div>
+
+    <div style="display:flex; gap:7px; flex-wrap:wrap; margin-top:4px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(245,158,11,0.3); background:rgba(245,158,11,0.07); color:#f59e0b;">2 calculators</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(16,185,129,0.3); background:rgba(16,185,129,0.07); color:#10b981;">GTK GUI</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(239,68,68,0.3); background:rgba(239,68,68,0.07); color:#ef4444;">55 days left</span>
+    </div>
+
+    <!-- week complete bar -->
+    <div style="display:flex; flex-direction:column; gap:6px; margin-top:4px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#444; letter-spacing:2px;">WEEK 1 — COMPLETE</div>
+      <div style="display:flex; gap:4px;">
+        <div style="flex:1; height:6px; border-radius:3px; background:#f59e0b;"></div>
+        <div style="flex:1; height:6px; border-radius:3px; background:#f59e0b;"></div>
+        <div style="flex:1; height:6px; border-radius:3px; background:#f59e0b;"></div>
+        <div style="flex:1; height:6px; border-radius:3px; background:#f59e0b;"></div>
+        <div style="flex:1; height:6px; border-radius:3px; background:#f59e0b;"></div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#f59e0b; text-align:right;">5 / 5 days ✓</div>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#f59e0b; color:#000;">NJ</div>
+      <div>
+        <div class="av-name">Nde Julius</div>
+        <div class="av-role">Physics → Mechatronics · Day 5 of 60</div>
+      </div>
+      <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">SCROLL ↓</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 2: WEEK 1 RECAP ══ -->
+<div class="card c2">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#10b981;">
+      <div class="dot" style="background:#10b981;"></div>
+      WEEK 1 — EVERYTHING MASTERED
+    </div>
+  </div>
+  <div class="card-num">2 / 8</div>
+
+  <div class="mid" style="gap:9px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1;">5 DAYS OF<br><span style="color:#10b981;">C PROGRAMMING</span></div>
+
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <div class="info-row">
+        <span style="color:#10b981; font-size:14px;">✓</span>
+        <div><div style="font-size:13px; font-weight:700; color:#ccc;">Day 1 — Variables & Data Types</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">int float double char · printf scanf · sizeof</div></div>
+      </div>
+      <div class="info-row">
+        <span style="color:#10b981; font-size:14px;">✓</span>
+        <div><div style="font-size:13px; font-weight:700; color:#ccc;">Day 2 — Control Flow</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">if/else · ternary · switch · while loop</div></div>
+      </div>
+      <div class="info-row">
+        <span style="color:#10b981; font-size:14px;">✓</span>
+        <div><div style="font-size:13px; font-weight:700; color:#ccc;">Day 3 — Functions</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">void · return · parameters · math.h</div></div>
+      </div>
+      <div class="info-row">
+        <span style="color:#10b981; font-size:14px;">✓</span>
+        <div><div style="font-size:13px; font-weight:700; color:#ccc;">Day 4 — Arrays</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">index · loop fill · accumulator · average</div></div>
+      </div>
+      <div class="info-row" style="border-color:rgba(245,158,11,0.25); background:rgba(245,158,11,0.05);">
+        <span style="color:#f59e0b; font-size:14px;">🏁</span>
+        <div><div style="font-size:13px; font-weight:700; color:#fcd34d;">Day 5 — Calculator Challenge</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">Console + GUI · all concepts combined</div></div>
+      </div>
+    </div>
+
+    <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.18); border-radius:8px; padding:11px 13px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; line-height:1.6; text-align:center;">
+      <span style="color:#10b981;">Week 1 complete.</span> You now write real C programs from scratch. Most people quit before this point.
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#10b981; color:#000;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Week 1 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 3: CONSOLE CALCULATOR ══ -->
+<div class="card c3">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#f59e0b;">
+      <div class="dot" style="background:#f59e0b;"></div>
+      CALCULATOR 1 · CONSOLE VERSION
+    </div>
+  </div>
+  <div class="card-num">3 / 8</div>
+
+  <div class="mid" style="gap:11px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:34px; letter-spacing:2px; color:#fff; line-height:1.05;">WEEK 1<br><span style="color:#f59e0b;">MILESTONE PROJECT</span></div>
+
+    <div class="code-block" style="font-size:10px;">
+<span class="cmt">// 4 functions declared up top</span>
+<span class="ty">float</span> <span class="fn">add</span>(<span class="ty">float</span> a, <span class="ty">float</span> b);
+<span class="ty">float</span> <span class="fn">subtract</span>(<span class="ty">float</span> a, <span class="ty">float</span> b);
+<span class="ty">float</span> <span class="fn">multiply</span>(<span class="ty">float</span> a, <span class="ty">float</span> b);
+<span class="ty">float</span> <span class="fn">divide</span>(<span class="ty">float</span> a, <span class="ty">float</span> b);
+
+<span class="kw">while</span>(<span class="num">1</span>) {          <span class="cmt">// infinite loop</span>
+  <span class="fn">printf</span>(<span class="str">"=== MENU ===\n"</span>);
+  <span class="fn">scanf</span>(<span class="str">"%d"</span>, &amp;choice);
+  <span class="kw">if</span>(choice<span class="op">==</span><span class="num">5</span>) <span class="kw">break</span>;
+  <span class="kw">switch</span>(choice) {
+    <span class="kw">case</span> <span class="num">1</span>: <span class="fn">add</span>(a,b); <span class="kw">break</span>;
+    <span class="cmt">// ...all 4 ops</span>
+  }
+}</div>
+
+    <div style="display:flex; flex-direction:column; gap:7px;">
+      <div style="display:flex; gap:8px; align-items:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">
+        <span style="color:#f59e0b;">→</span> Function declarations before main()
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">
+        <span style="color:#f59e0b;">→</span> while(1) infinite loop — like Arduino!
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">
+        <span style="color:#f59e0b;">→</span> Division by zero check — professional!
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">
+        <span style="color:#f59e0b;">→</span> break exits loop when user picks 5
+      </div>
+    </div>
+
+    <div style="background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.2); border-radius:8px; padding:11px 13px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; line-height:1.6;">
+      ⚡ This structure — menu loop + switch + functions — is the exact pattern used in embedded command-line interfaces for testing firmware.
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#f59e0b; color:#000;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 5 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 4: GUI CALCULATOR ══ -->
+<div class="card c4">
+  <div class="grid"></div>
+  <div class="big-num" style="font-size:120px; color:rgba(139,92,246,0.05); top:60px; right:-10px;">GTK</div>
+  <div class="top">
+    <div class="tag" style="color:#a855f7;">
+      <div class="dot" style="background:#a855f7;"></div>
+      CALCULATOR 2 · GTK GUI — ADVANCED 🔥
+    </div>
+  </div>
+  <div class="card-num">4 / 8</div>
+
+  <div class="mid" style="gap:11px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:34px; letter-spacing:2px; color:#fff; line-height:1.05;">REAL WINDOW<br><span style="color:#a855f7;">WITH BUTTONS</span></div>
+
+    <div class="code-block" style="font-size:10px;">
+<span class="kw">#include</span> <span class="str">&lt;gtk/gtk.h&gt;</span>
+
+<span class="cmt">// Real GUI window</span>
+window <span class="op">=</span> <span class="fn">gtk_window_new</span>(...);
+entry1 <span class="op">=</span> <span class="fn">gtk_entry_new</span>();
+button <span class="op">=</span> <span class="fn">gtk_button_new_with_label</span>(<span class="str">"Add"</span>);
+
+<span class="cmt">// Button click → calculate</span>
+<span class="fn">g_signal_connect</span>(button,
+  <span class="str">"clicked"</span>,
+  G_CALLBACK(<span class="fn">calculate</span>), NULL);
+
+<span class="fn">gtk_main</span>(); <span class="cmt">// run the app</span></div>
+
+    <div style="background:rgba(139,92,246,0.07); border:1px solid rgba(139,92,246,0.2); border-radius:8px; padding:12px 14px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#a855f7; letter-spacing:2px; margin-bottom:5px;">WHY THIS IS IMPRESSIVE</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; line-height:1.7;">GTK is a professional GUI library used to build Linux desktop apps. You just built a real clickable window application in C on Day 5. That's <span style="color:#a855f7;">advanced C programming.</span></div>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:5px;">
+      <span class="pill" style="color:#a855f7; border-color:rgba(139,92,246,0.25); background:rgba(139,92,246,0.07);">gtk_window_new</span>
+      <span class="pill" style="color:#a855f7; border-color:rgba(139,92,246,0.25); background:rgba(139,92,246,0.07);">gtk_entry</span>
+      <span class="pill" style="color:#a855f7; border-color:rgba(139,92,246,0.25); background:rgba(139,92,246,0.07);">g_signal_connect</span>
+      <span class="pill" style="color:#a855f7; border-color:rgba(139,92,246,0.25); background:rgba(139,92,246,0.07);">callback function</span>
+      <span class="pill" style="color:#a855f7; border-color:rgba(139,92,246,0.25); background:rgba(139,92,246,0.07);">gtk_main()</span>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#a855f7; color:#fff;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 5 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 5: WHAT COMBINED ══ -->
+<div class="card c5">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#ef4444;">
+      <div class="dot" style="background:#ef4444;"></div>
+      ALL WEEK 1 CONCEPTS COMBINED
+    </div>
+  </div>
+  <div class="card-num">5 / 8</div>
+
+  <div class="mid" style="gap:11px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:2px; color:#fff; line-height:1.05;">ONE PROJECT<br><span style="color:#ef4444;">ALL CONCEPTS</span></div>
+
+    <div style="display:flex; flex-direction:column; gap:7px;">
+      <div style="display:flex; gap:10px; align-items:center; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.05); border-radius:7px; padding:9px 12px;">
+        <span style="font-size:16px;">🔢</span>
+        <div><div style="font-size:12px; font-weight:700; color:#ccc;">Data Types</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">float for precision · int for choice</div></div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.05); border-radius:7px; padding:9px 12px;">
+        <span style="font-size:16px;">🔀</span>
+        <div><div style="font-size:12px; font-weight:700; color:#ccc;">Control Flow</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">switch menu · if division check · break</div></div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.05); border-radius:7px; padding:9px 12px;">
+        <span style="font-size:16px;">🔧</span>
+        <div><div style="font-size:12px; font-weight:700; color:#ccc;">Functions</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">add subtract multiply divide — all separate</div></div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.05); border-radius:7px; padding:9px 12px;">
+        <span style="font-size:16px;">🔁</span>
+        <div><div style="font-size:12px; font-weight:700; color:#ccc;">Loops</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">while(1) keeps calculator running</div></div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.2); border-radius:7px; padding:9px 12px;">
+        <span style="font-size:16px;">🖥️</span>
+        <div><div style="font-size:12px; font-weight:700; color:#fca5a5;">GTK GUI</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">real clickable window — beyond Week 1!</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#ef4444; color:#fff;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 5 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 6: HONEST MOMENT ══ -->
+<div class="card c6">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#3b82f6;">
+      <div class="dot" style="background:#3b82f6;"></div>
+      HONEST REFLECTION
+    </div>
+  </div>
+  <div class="card-num">6 / 8</div>
+
+  <div class="mid" style="gap:14px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1.05;">2 DAYS<br><span style="color:#3b82f6;">ONE GOAL</span></div>
+
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div style="background:rgba(59,130,246,0.07); border:1px solid rgba(59,130,246,0.2); border-radius:8px; padding:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#3b82f6; letter-spacing:2px; margin-bottom:6px;">THE PROCESS</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#888; line-height:1.7;">Day 5 took 2 days instead of 1. That's not failure — that's depth. You didn't rush. You built a console calculator AND a GUI calculator.</div>
+      </div>
+      <div style="background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.2); border-radius:8px; padding:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#10b981; letter-spacing:2px; margin-bottom:6px;">THE RESULT</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#888; line-height:1.7;">Week 1 is complete. You have more C knowledge than most people who call themselves "beginners" for months.</div>
+      </div>
+      <div style="background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.2); border-radius:8px; padding:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#f59e0b; letter-spacing:2px; margin-bottom:6px;">NEXT WEEK</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#888; line-height:1.7;">Week 2 — Pointers, structs, and bitmasking. The things that separate embedded engineers from everyone else.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#3b82f6; color:#fff;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 5 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 7: STATS ══ -->
+<div class="card c7">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#10b981;">
+      <div class="dot" style="background:#10b981;"></div>
+      WEEK 1 — BY THE NUMBERS
+    </div>
+  </div>
+  <div class="card-num">7 / 8</div>
+
+  <div class="mid" style="gap:13px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1.05;">WHAT<br><span style="color:#10b981;">5 DAYS BUILT</span></div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+      <div style="background:rgba(255,255,255,0.03); border:1px solid #1a1f2e; border-radius:10px; padding:16px; text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:44px; color:#f59e0b; line-height:1;">20+</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#444; text-transform:uppercase; margin-top:4px;">Programs Written</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03); border:1px solid #1a1f2e; border-radius:10px; padding:16px; text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:44px; color:#10b981; line-height:1;">15h</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#444; text-transform:uppercase; margin-top:4px;">Total Hours</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03); border:1px solid #1a1f2e; border-radius:10px; padding:16px; text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:44px; color:#a855f7; line-height:1;">40+</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#444; text-transform:uppercase; margin-top:4px;">Concepts Learned</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03); border:1px solid #1a1f2e; border-radius:10px; padding:16px; text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:44px; color:#ef4444; line-height:1;">2</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#444; text-transform:uppercase; margin-top:4px;">Full Projects</div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:5px;">
+      <span class="pill" style="color:#f59e0b; border-color:rgba(245,158,11,0.25); background:rgba(245,158,11,0.07);">printf/scanf</span>
+      <span class="pill" style="color:#f59e0b; border-color:rgba(245,158,11,0.25); background:rgba(245,158,11,0.07);">if/else</span>
+      <span class="pill" style="color:#f59e0b; border-color:rgba(245,158,11,0.25); background:rgba(245,158,11,0.07);">switch</span>
+      <span class="pill" style="color:#f59e0b; border-color:rgba(245,158,11,0.25); background:rgba(245,158,11,0.07);">loops</span>
+      <span class="pill" style="color:#f59e0b; border-color:rgba(245,158,11,0.25); background:rgba(245,158,11,0.07);">functions</span>
+      <span class="pill" style="color:#f59e0b; border-color:rgba(245,158,11,0.25); background:rgba(245,158,11,0.07);">arrays</span>
+      <span class="pill" style="color:#f59e0b; border-color:rgba(245,158,11,0.25); background:rgba(245,158,11,0.07);">GTK GUI</span>
+      <span class="pill" style="color:#f59e0b; border-color:rgba(245,158,11,0.25); background:rgba(245,158,11,0.07);">math.h</span>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#10b981; color:#000;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Week 1 Complete</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 8: OUTRO ══ -->
+<div class="card c8">
+  <div class="grid"></div>
+  <div class="big-num" style="font-size:200px; color:rgba(245,158,11,0.05); bottom:-30px; right:-20px;">55</div>
+
+  <div class="top">
+    <div class="tag" style="color:#f59e0b;">
+      <div class="dot" style="background:#f59e0b;"></div>
+      WEEK 1 DONE · WEEK 2 INCOMING
+    </div>
+  </div>
+  <div class="card-num">8 / 8</div>
+
+  <div class="mid" style="gap:13px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:44px; letter-spacing:2px; color:#fff; line-height:0.95;">55 DAYS<br><span style="color:#f59e0b;">REMAINING</span></div>
+
+    <div style="background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.2); border-radius:10px; padding:14px 16px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#f59e0b; letter-spacing:2px; margin-bottom:8px;">NEXT WEEK · WEEK 2</div>
+      <div style="font-size:15px; font-weight:700; color:#fff; margin-bottom:6px;">Pointers · Structs · Bitmasking</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; line-height:1.7;">The concepts that separate embedded engineers from everyone else. 80% of real firmware is built on these.</div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:7px; text-align:center;">
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:26px; color:#f59e0b;">WK1</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#10b981;">DONE ✓</div>
+      </div>
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:26px; color:#888;">WK2</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#444;">NEXT</div>
+      </div>
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:26px; color:#444;">WK3</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#333;">COMING</div>
+      </div>
+    </div>
+
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#333; text-align:center; letter-spacing:1px; line-height:2;">
+      #Mechatronics #CProgramming #Week1Done<br>#GTK #Calculator #LearnInPublic #Day5Done
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:linear-gradient(135deg,#f59e0b,#10b981); color:#000;">NJ</div>
+      <div>
+        <div class="av-name">Nde Julius</div>
+        <div class="av-role">Week 2 starts next session 💪</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DIVIDER -->
+<div class="divider">Captions</div>
+
+<!-- TIKTOK -->
+<div class="caption-box">
+  <div class="cap-head">
+    <span style="font-size:16px;">🎵</span>
+    <span class="cap-title">TikTok</span>
+    <button class="copy-btn" onclick="copyText('tt')">Copy</button>
+  </div>
+  <div class="cap-body" id="tt"><strong>Week 1 done. I built TWO calculators in C 🔥</strong>
+
+5 days. 15 hours. 20+ programs. Here's what Week 1 of my public Mechatronics journey looked like:
+
+Day 1 → Variables, data types, user input
+Day 2 → Control flow, ternary, switch, while
+Day 3 → Functions, return values, math.h
+Day 4 → Arrays, loop fill, average calculator
+Day 5 → Built a FULL calculator combining everything
+
+But I didn't stop there. I built a SECOND calculator using GTK — a real GUI with a clickable window, input fields, and a button. In C. On Day 5.
+
+Day 5 took 2 days. No shame. Depth over speed.
+
+55 days left. Week 2 starts next: Pointers, Structs, Bitmasking — the real embedded stuff. 🧠⚡</div>
+  <div class="cap-tags">#CProgramming #Mechatronics #Week1Done #GTK #Calculator #EmbeddedSystems #LearnToCode #STEMJourney #LearnInPublic #Day5Done</div>
+</div>
+
+<!-- LINKEDIN -->
+<div class="caption-box">
+  <div class="cap-head">
+    <span style="font-size:16px;">💼</span>
+    <span class="cap-title">LinkedIn</span>
+    <button class="copy-btn" onclick="copyText('li')">Copy</button>
+  </div>
+  <div class="cap-body" id="li"><strong>Week 1 complete. Here's what 5 days of public C programming looks like. ✅</strong>
+
+I committed to documenting my journey from Physics graduate to Mechatronics Engineer — 3 hours daily, 5 days a week, every step public. Week 1 is done.
+
+What I built this week:
+→ Day 1: Variables, data types, printf/scanf, user input
+→ Day 2: if/else, ternary operator, switch, while loop
+→ Day 3: Custom functions, return values, math.h library
+→ Day 4: Arrays, loop-fill pattern, marks average calculator
+→ Day 5: Full console calculator + GTK GUI calculator
+
+The Week 1 milestone project was a console calculator combining all concepts — 4 math functions declared before main(), while(1) infinite loop, switch menu, and division-by-zero protection.
+
+The bonus project was a GTK GUI calculator — a real desktop window application with entry fields, a button, and a callback function. That's not beginner territory. That's professional C with event-driven programming.
+
+Day 5 took 2 days. I didn't rush. That's the right call.
+
+Week 2 starts next: Pointers, Structs, and Bitmasking — the foundation of real embedded firmware.
+
+55 days remaining. Every week documented.</div>
+  <div class="cap-tags">#Mechatronics #CProgramming #EmbeddedSystems #LearnInPublic #Week1 #EngineeringCommunity #GTK #CareerDevelopment #Robotics #GrowthMindset</div>
+</div>
+
+<script>
+  function copyText(id) {
+    const el = document.getElementById(id);
+    const panel = el.closest('.caption-box');
+    const btn = panel.querySelector('.copy-btn');
+    navigator.clipboard.writeText(el.innerText).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Done';
+      btn.style.background = '#10b981';
+      btn.style.color = '#000';
+      setTimeout(() => { btn.textContent = orig; btn.style.background=''; btn.style.color=''; }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
