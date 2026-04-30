@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 3 — Nde Julius</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #050608;
+    font-family: 'Barlow Condensed', sans-serif;
+    padding: 24px 16px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .page-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: #333;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .page-label span { color: #a855f7; }
+
+  /* STORY CARD — 9:16 portrait ratio */
+  .card {
+    width: 100%;
+    max-width: 360px;
+    aspect-ratio: 9 / 16;
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 28px 24px;
+    flex-shrink: 0;
+  }
+
+  /* card number label */
+  .card-num {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 1px;
+    z-index: 2;
+  }
+
+  /* ── CARD BACKGROUNDS ── */
+  .c1 { background: #07090f; }
+  .c1::before {
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 80% 50% at 80% 10%, rgba(168,85,247,0.25) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 10% 90%, rgba(99,102,241,0.15) 0%, transparent 50%);
+    pointer-events:none;
+  }
+
+  .c2 { background: #080c0a; }
+  .c2::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 70% 60% at 50% 20%, rgba(16,185,129,0.18) 0%, transparent 60%);
+    pointer-events:none;
+  }
+
+  .c3 { background: #0c0910; }
+  .c3::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at bottom right, rgba(168,85,247,0.2) 0%, transparent 55%);
+    pointer-events:none;
+  }
+
+  .c4 { background: #0a0c08; }
+  .c4::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at top left, rgba(245,158,11,0.15) 0%, transparent 55%);
+    pointer-events:none;
+  }
+
+  .c5 { background: #08090d; }
+  .c5::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at center, rgba(59,130,246,0.15) 0%, transparent 60%);
+    pointer-events:none;
+  }
+
+  .c6 { background: #0d0808; }
+  .c6::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at bottom, rgba(239,68,68,0.12) 0%, transparent 55%);
+    pointer-events:none;
+  }
+
+  .c7 { background: #07090c; }
+  .c7::before {
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 30%, rgba(168,85,247,0.15) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 80% 75%, rgba(16,185,129,0.12) 0%, transparent 50%);
+    pointer-events:none;
+  }
+
+  .c8 { background: #080a0c; }
+  .c8::before {
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 30%, rgba(168,85,247,0.18) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 70% 80%, rgba(16,185,129,0.1) 0%, transparent 50%);
+    pointer-events:none;
+  }
+
+  .grid {
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* ── SHARED ELEMENTS ── */
+  .top { z-index: 1; }
+  .middle { z-index: 1; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+  .bottom { z-index: 1; }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  .big-num {
+    font-family: 'Bebas Neue', sans-serif;
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    letter-spacing: -4px;
+    line-height: 1;
+  }
+
+  .code-block {
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    line-height: 1.8;
+    z-index: 1;
+  }
+
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .str { color: #79c0ff; }
+  .num { color: #f97316; }
+  .cmt { color: #4a5568; font-style: italic; }
+  .ty { color: #a855f7; }
+  .op { color: #f5c842; }
+
+  .author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .av {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .av-name { font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 0.3px; }
+  .av-role { font-size: 10px; color: #555; font-weight: 300; }
+
+  .info-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .info-icon { font-size: 18px; flex-shrink: 0; }
+  .info-text { font-size: 13px; font-weight: 500; line-height: 1.4; color: #ccc; }
+  .info-sub { font-size: 10px; color: #555; font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+
+  .pill {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 4px 9px;
+    border-radius: 4px;
+    margin: 3px 2px;
+    border: 1px solid;
+  }
+
+  /* CAPTION SECTION */
+  .caption-box {
+    width: 100%;
+    max-width: 360px;
+    background: #0e1018;
+    border: 1px solid #1c1f2b;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .cap-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #1c1f2b;
+  }
+
+  .cap-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+
+  .copy-btn {
+    margin-left: auto;
+    background: #1c1f2b;
+    border: none;
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover { background: #a855f7; }
+
+  .cap-body {
+    padding: 16px;
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: #bbb;
+    white-space: pre-line;
+  }
+
+  .cap-body strong { color: #a855f7; }
+
+  .cap-tags {
+    padding: 8px 16px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #a855f7;
+    opacity: 0.6;
+    line-height: 1.9;
+  }
+
+  .section-divider {
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #222;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #1a1a22;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-label">Nde Julius · <span>Day 3 Done ✓</span> · Story Cards</div>
+<div class="page-label" style="color:#555; margin-bottom:8px;">Screenshot each card · Add your photos · Post</div>
+
+<!-- ══════════ CARD 1: COVER ══════════ -->
+<div class="card c1">
+  <div class="grid"></div>
+  <div class="big-num" style="font-size:260px; color:rgba(168,85,247,0.06); bottom:-40px; right:-30px;">3</div>
+
+  <div class="top">
+    <div class="tag" style="color:#a855f7;">
+      <div class="dot" style="background:#a855f7;"></div>
+      STAGE 0 · WEEK 1 · WED
+    </div>
+  </div>
+  <div class="card-num">1 / 8</div>
+
+  <div class="middle" style="gap:10px;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#444; letter-spacing:2px;">MECHATRONICS JOURNEY</div>
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:82px; line-height:0.85; letter-spacing:2px; color:#fff;">DAY<br><span style="color:#a855f7;">THREE</span></div>
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:34px; color:#fff; letter-spacing:3px; line-height:1.1; margin-top:8px;">FUNCTIONS<br><span style="color:#a855f7;">UNLOCKED</span></div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; margin-top:6px; line-height:1.7;">7 programs · void · return · parameters<br>for loops · math.h · custom functions</div>
+    <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(168,85,247,0.3); background:rgba(168,85,247,0.08); color:#a855f7;">7 programs</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(16,185,129,0.3); background:rgba(16,185,129,0.08); color:#10b981;">3 hours</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(245,158,11,0.3); background:rgba(245,158,11,0.08); color:#f59e0b;">57 days left</span>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="author">
+      <div class="av" style="background:#a855f7; color:#fff;">NJ</div>
+      <div>
+        <div class="av-name">Nde Julius</div>
+        <div class="av-role">Physics → Mechatronics · Day 3 of 60</div>
+      </div>
+      <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">SWIPE ↓</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CARD 2: ALL 7 PROGRAMS ══════════ -->
+<div class="card c2">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#10b981;">
+      <div class="dot" style="background:#10b981;"></div>
+      7 PROGRAMS TODAY
+    </div>
+  </div>
+  <div class="card-num">2 / 8</div>
+
+  <div class="middle" style="gap:8px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1;">WHAT I<br><span style="color:#10b981;">BUILT</span></div>
+
+    <div style="display:flex; flex-direction:column; gap:7px;">
+      <div class="info-row">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; color:rgba(16,185,129,0.4); width:18px;">1</div>
+        <div><div class="info-text">for loop · print 0–4</div><div class="info-sub">first loop mastery</div></div>
+        <span style="margin-left:auto; color:#10b981; font-size:14px;">✓</span>
+      </div>
+      <div class="info-row">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; color:rgba(16,185,129,0.4); width:18px;">2</div>
+        <div><div class="info-text">sum 1 to 100 = 5050</div><div class="info-sub">loop accumulator pattern</div></div>
+        <span style="margin-left:auto; color:#10b981; font-size:14px;">✓</span>
+      </div>
+      <div class="info-row" style="border-color:rgba(168,85,247,0.25); background:rgba(168,85,247,0.05);">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; color:rgba(168,85,247,0.5); width:18px;">3</div>
+        <div><div class="info-text" style="color:#d8b4fe;">void greet() — 1st function!</div><div class="info-sub">your first custom function</div></div>
+        <span style="margin-left:auto; color:#a855f7; font-size:14px;">🔥</span>
+      </div>
+      <div class="info-row">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; color:rgba(16,185,129,0.4); width:18px;">4</div>
+        <div><div class="info-text">int square(int) — return value</div><div class="info-sub">function returns result</div></div>
+        <span style="margin-left:auto; color:#10b981; font-size:14px;">✓</span>
+      </div>
+      <div class="info-row">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; color:rgba(16,185,129,0.4); width:18px;">5</div>
+        <div><div class="info-text">sqrt() from math.h</div><div class="info-sub">using standard library</div></div>
+        <span style="margin-left:auto; color:#10b981; font-size:14px;">✓</span>
+      </div>
+      <div class="info-row">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; color:rgba(16,185,129,0.4); width:18px;">6</div>
+        <div><div class="info-text">void square — prints inside</div><div class="info-sub">void vs return comparison</div></div>
+        <span style="margin-left:auto; color:#10b981; font-size:14px;">✓</span>
+      </div>
+      <div class="info-row" style="border-color:rgba(245,158,11,0.25); background:rgba(245,158,11,0.05);">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; color:rgba(245,158,11,0.5); width:18px;">7</div>
+        <div><div class="info-text" style="color:#fcd34d;">multiplication(int a, int b)</div><div class="info-sub">two parameters — advanced!</div></div>
+        <span style="margin-left:auto; color:#f59e0b; font-size:14px;">🔥</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="author">
+      <div class="av" style="background:#10b981; color:#000;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 3 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CARD 3: FOR LOOPS ══════════ -->
+<div class="card c3">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#a855f7;">
+      <div class="dot" style="background:#a855f7;"></div>
+      PROGRAMS 1 & 2 · FOR LOOPS
+    </div>
+  </div>
+  <div class="card-num">3 / 8</div>
+
+  <div class="middle" style="gap:12px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1.05;">LOOPS THAT<br><span style="color:#a855f7;">COUNT & SUM</span></div>
+
+    <div class="code-block">
+<span class="cmt">// Print 0 to 4</span>
+<span class="kw">for</span>(<span class="ty">int</span> i<span class="op">=</span><span class="num">0</span>; i<span class="op">&lt;</span><span class="num">5</span>; i<span class="op">++</span>) {
+    <span class="fn">printf</span>(<span class="str">"%d \n"</span>, i);
+}
+
+<span class="cmt">// Sum 1 to 100</span>
+<span class="ty">int</span> sum <span class="op">=</span> <span class="num">0</span>;
+<span class="kw">for</span>(i<span class="op">=</span><span class="num">0</span>; i<span class="op">&lt;=</span><span class="num">100</span>; i<span class="op">++</span>) {
+    sum <span class="op">=</span> sum <span class="op">+</span> i;
+}
+<span class="fn">printf</span>(<span class="str">"sum = %d"</span>, sum);
+<span class="cmt">// Output: sum = 5050 ✓</span></div>
+
+    <div style="background:rgba(168,85,247,0.07); border:1px solid rgba(168,85,247,0.2); border-radius:8px; padding:12px 14px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#a855f7; letter-spacing:2px; margin-bottom:4px;">PHYSICS CONNECTION</div>
+      <div style="font-size:12px; color:#888; font-family:'JetBrains Mono',monospace; line-height:1.6;">This is a Riemann sum! Your physics brain already knows this pattern — summation over N steps. In embedded it reads N sensor samples the same way.</div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="author">
+      <div class="av" style="background:#a855f7; color:#fff;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 3 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CARD 4: FIRST FUNCTION ══════════ -->
+<div class="card c4">
+  <div class="grid"></div>
+  <div class="big-num" style="font-size:160px; color:rgba(245,158,11,0.05); top:40px; right:-20px;">fn</div>
+  <div class="top">
+    <div class="tag" style="color:#f59e0b;">
+      <div class="dot" style="background:#f59e0b;"></div>
+      PROGRAM 3 · FIRST FUNCTION 🔥
+    </div>
+  </div>
+  <div class="card-num">4 / 8</div>
+
+  <div class="middle" style="gap:12px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1.05;">YOUR FIRST<br><span style="color:#f59e0b;">CUSTOM FUNCTION</span></div>
+
+    <div class="code-block">
+<span class="cmt">// Define the function</span>
+<span class="kw">void</span> <span class="fn">greet</span>() {
+    <span class="fn">printf</span>(<span class="str">"julius"</span>);
+}
+
+<span class="cmt">// Call it from main</span>
+<span class="ty">int</span> <span class="fn">main</span>() {
+    <span class="fn">greet</span>();
+    <span class="kw">return</span> <span class="num">0</span>;
+}</div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px;">
+      <div style="background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.2); border-radius:8px; padding:10px; text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#f59e0b; font-weight:700; margin-bottom:4px;">void</div>
+        <div style="font-size:10px; color:#666; font-family:'JetBrains Mono',monospace;">returns nothing</div>
+      </div>
+      <div style="background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.2); border-radius:8px; padding:10px; text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#f59e0b; font-weight:700; margin-bottom:4px;">greet()</div>
+        <div style="font-size:10px; color:#666; font-family:'JetBrains Mono',monospace;">call by name</div>
+      </div>
+    </div>
+
+    <div style="background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.2); border-radius:8px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; line-height:1.6;">
+      ⚡ In Arduino: <span style="color:#f59e0b;">setup()</span> and <span style="color:#f59e0b;">loop()</span> are functions exactly like this — defined once, called automatically.
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="author">
+      <div class="av" style="background:#f59e0b; color:#000;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 3 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CARD 5: RETURN VALUE ══════════ -->
+<div class="card c5">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#3b82f6;">
+      <div class="dot" style="background:#3b82f6;"></div>
+      PROGRAM 4 · RETURN VALUE
+    </div>
+  </div>
+  <div class="card-num">5 / 8</div>
+
+  <div class="middle" style="gap:12px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1.05;">FUNCTION<br><span style="color:#3b82f6;">WITH RETURN</span></div>
+
+    <div class="code-block">
+<span class="ty">int</span> <span class="fn">square</span>(<span class="ty">int</span> number) {
+    <span class="ty">int</span> sq <span class="op">=</span> number <span class="op">*</span> number;
+    <span class="kw">return</span> sq;
+}
+
+<span class="ty">int</span> <span class="fn">main</span>() {
+    <span class="ty">int</span> result <span class="op">=</span> <span class="fn">square</span>(<span class="num">25</span>);
+    <span class="fn">printf</span>(<span class="str">"result = %d"</span>, result);
+    <span class="cmt">// Output: 625</span>
+    <span class="kw">return</span> <span class="num">0</span>;
+}</div>
+
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span style="color:#3b82f6; font-size:14px; flex-shrink:0;">→</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">int before name = returns an integer</span>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span style="color:#3b82f6; font-size:14px; flex-shrink:0;">→</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">return sends value back to caller</span>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span style="color:#3b82f6; font-size:14px; flex-shrink:0;">→</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">square(25) → passes 25 as argument</span>
+      </div>
+    </div>
+
+    <div style="background:rgba(59,130,246,0.07); border:1px solid rgba(59,130,246,0.2); border-radius:8px; padding:11px 13px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; line-height:1.6;">
+      ⚡ Every sensor read function in embedded returns a value exactly like this — <span style="color:#3b82f6;">readTemperature()</span> returns a float.
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="author">
+      <div class="av" style="background:#3b82f6; color:#fff;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 3 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CARD 6: MATH.H + TWO PARAMS ══════════ -->
+<div class="card c6">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#ef4444;">
+      <div class="dot" style="background:#ef4444;"></div>
+      PROGRAMS 5 & 7 · MATH.H + 2 PARAMS
+    </div>
+  </div>
+  <div class="card-num">6 / 8</div>
+
+  <div class="middle" style="gap:12px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:34px; letter-spacing:2px; color:#fff; line-height:1.1;">LIBRARY FUNCTIONS<br><span style="color:#ef4444;">& TWO INPUTS</span></div>
+
+    <div class="code-block" style="font-size:11px;">
+<span class="cmt">// math.h — sqrt()</span>
+<span class="kw">#include</span> <span class="str">&lt;math.h&gt;</span>
+
+<span class="ty">float</span> result <span class="op">=</span> <span class="fn">sqrt</span>(<span class="num">25</span>);
+<span class="fn">printf</span>(<span class="str">"%.f"</span>, result); <span class="cmt">// 5</span>
+
+<span class="cmt">// Two parameters</span>
+<span class="ty">int</span> <span class="fn">multiplication</span>(<span class="ty">int</span> a, <span class="ty">int</span> b) {
+    <span class="ty">int</span> product <span class="op">=</span> a <span class="op">*</span> b;
+    <span class="fn">printf</span>(<span class="str">"%d x %d = %d"</span>,a,b,product);
+}
+<span class="fn">multiplication</span>(<span class="num">2</span>, <span class="num">5</span>); <span class="cmt">// 2x5=10</span></div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
+      <span class="pill" style="color:#ef4444; border-color:rgba(239,68,68,0.25); background:rgba(239,68,68,0.07);">#include math.h</span>
+      <span class="pill" style="color:#ef4444; border-color:rgba(239,68,68,0.25); background:rgba(239,68,68,0.07);">sqrt() pow()</span>
+      <span class="pill" style="color:#ef4444; border-color:rgba(239,68,68,0.25); background:rgba(239,68,68,0.07);">two parameters</span>
+      <span class="pill" style="color:#ef4444; border-color:rgba(239,68,68,0.25); background:rgba(239,68,68,0.07);">int a, int b</span>
+    </div>
+
+    <div style="background:rgba(239,68,68,0.07); border:1px solid rgba(239,68,68,0.2); border-radius:8px; padding:11px 13px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; line-height:1.6;">
+      ⚡ PID formula uses sqrt, pow, abs — all from math.h. You will use this library every day in Stage 4.
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="author">
+      <div class="av" style="background:#ef4444; color:#fff;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 3 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CARD 7: KEY LESSON ══════════ -->
+<div class="card c7">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#a855f7;">
+      <div class="dot" style="background:#a855f7;"></div>
+      KEY LESSON · VOID VS RETURN
+    </div>
+  </div>
+  <div class="card-num">7 / 8</div>
+
+  <div class="middle" style="gap:14px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1.05;">THE BIG<br><span style="color:#a855f7;">DIFFERENCE</span></div>
+
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div style="background:rgba(168,85,247,0.07); border:1px solid rgba(168,85,247,0.2); border-radius:8px; padding:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#a855f7; letter-spacing:2px; margin-bottom:6px;">VOID FUNCTION</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#888; line-height:1.6;">Does work inside itself.<br>Prints, moves motors, blinks LEDs.<br>Returns <span style="color:#a855f7;">nothing</span> to caller.</div>
+      </div>
+      <div style="background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.2); border-radius:8px; padding:14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#10b981; letter-spacing:2px; margin-bottom:6px;">RETURN FUNCTION</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#888; line-height:1.6;">Computes and hands back a value.<br>readSensor() → 23.4°C<br>Returns <span style="color:#10b981;">a result</span> to use.</div>
+      </div>
+    </div>
+
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; color:#a855f7; text-align:center; margin-top:6px;">FUNCTIONS = REUSABLE CODE BLOCKS</div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; text-align:center; line-height:1.6;">Every microcontroller firmware is built<br>from hundreds of small functions.</div>
+  </div>
+
+  <div class="bottom">
+    <div class="author">
+      <div class="av" style="background:#a855f7; color:#fff;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 3 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CARD 8: OUTRO ══════════ -->
+<div class="card c8">
+  <div class="grid"></div>
+  <div class="big-num" style="font-size:220px; color:rgba(168,85,247,0.05); bottom:-30px; right:-25px;">57</div>
+
+  <div class="top">
+    <div class="tag" style="color:#10b981;">
+      <div class="dot" style="background:#10b981;"></div>
+      DAY 3 · COMPLETE
+    </div>
+  </div>
+  <div class="card-num">8 / 8</div>
+
+  <div class="middle" style="gap:14px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:50px; letter-spacing:2px; color:#fff; line-height:0.9;">57 DAYS<br><span style="color:#10b981;">REMAINING</span></div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:5px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#444; letter-spacing:2px; width:100%; margin-bottom:2px;">CONCEPTS UNLOCKED</div>
+      <span class="pill" style="color:#a855f7; border-color:rgba(168,85,247,0.25); background:rgba(168,85,247,0.07);">void function</span>
+      <span class="pill" style="color:#a855f7; border-color:rgba(168,85,247,0.25); background:rgba(168,85,247,0.07);">return value</span>
+      <span class="pill" style="color:#a855f7; border-color:rgba(168,85,247,0.25); background:rgba(168,85,247,0.07);">parameters</span>
+      <span class="pill" style="color:#a855f7; border-color:rgba(168,85,247,0.25); background:rgba(168,85,247,0.07);">for loop</span>
+      <span class="pill" style="color:#a855f7; border-color:rgba(168,85,247,0.25); background:rgba(168,85,247,0.07);">accumulator</span>
+      <span class="pill" style="color:#a855f7; border-color:rgba(168,85,247,0.25); background:rgba(168,85,247,0.07);">math.h</span>
+      <span class="pill" style="color:#a855f7; border-color:rgba(168,85,247,0.25); background:rgba(168,85,247,0.07);">sqrt()</span>
+      <span class="pill" style="color:#a855f7; border-color:rgba(168,85,247,0.25); background:rgba(168,85,247,0.07);">2 params</span>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; text-align:center;">
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:28px; color:#a855f7;">7</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#444; text-transform:uppercase;">Programs</div>
+      </div>
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:28px; color:#10b981;">3h</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#444; text-transform:uppercase;">Logged</div>
+      </div>
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:28px; color:#f59e0b;">8</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#444; text-transform:uppercase;">Concepts</div>
+      </div>
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:28px; color:#ef4444;">57</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#444; text-transform:uppercase;">Days Left</div>
+      </div>
+    </div>
+
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#333; text-align:center; letter-spacing:1px; line-height:2;">
+      #Mechatronics #CProgramming #Functions<br>#EmbeddedSystems #Day3Done #LearnInPublic
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="author">
+      <div class="av" style="background:linear-gradient(135deg,#a855f7,#10b981); color:#fff;">NJ</div>
+      <div>
+        <div class="av-name">Nde Julius</div>
+        <div class="av-role">Follow for Day 4 tomorrow 👇</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DIVIDER -->
+<div class="section-divider">Captions</div>
+
+<!-- TIKTOK CAPTION -->
+<div class="caption-box">
+  <div class="cap-head">
+    <span style="font-size:16px;">🎵</span>
+    <span class="cap-title">TikTok</span>
+    <button class="copy-btn" onclick="copyText('tt')">Copy</button>
+  </div>
+  <div class="cap-body" id="tt"><strong>Day 3 done. I wrote my first function today 🔥</strong>
+
+Physics grad → Mechatronics Engineer. 3 hours daily, publicly documented.
+
+7 programs today:
+✅ for loop — printed 0 to 4
+✅ Summed 1 to 100 using a loop → 5050 (Riemann sum vibes 😄)
+✅ void greet() — my FIRST custom function
+✅ int square(int) — function that returns a value
+✅ sqrt() from math.h library
+✅ void vs return — understood the difference
+✅ multiplication(int a, int b) — two parameters
+
+The moment it clicked: a function is just a named block of reusable code. In embedded firmware, every sensor read, every motor command, every GPIO toggle is wrapped in a function.
+
+3 days in. 57 left. Physics brain is adapting fast 🧠⚡</div>
+  <div class="cap-tags">#CProgramming #Mechatronics #Functions #EmbeddedSystems #Day3 #LearnToCode #STEMJourney #EngineeringLife #LearnInPublic #Day3Done</div>
+</div>
+
+<!-- LINKEDIN CAPTION -->
+<div class="caption-box">
+  <div class="cap-head">
+    <span style="font-size:16px;">💼</span>
+    <span class="cap-title">LinkedIn</span>
+    <button class="copy-btn" onclick="copyText('li')">Copy</button>
+  </div>
+  <div class="cap-body" id="li"><strong>Day 3 of my public Mechatronics journey — Functions in C. ✅</strong>
+
+Today I crossed an important threshold: writing my own reusable functions for the first time.
+
+7 programs written today:
+→ for loop — print and accumulate (summed 1 to 100 = 5050)
+→ void greet() — first custom function, no return value
+→ int square(int) — function with parameter and return value
+→ sqrt() from math.h — using C standard library
+→ void square(int) — prints result internally
+→ multiplication(int a, int b) — two-parameter function
+
+The key insight today: the difference between void and return functions maps directly to embedded development. Void functions handle output — blink an LED, drive a motor. Return functions handle input — read a sensor, compute a value. Every firmware module is built this way.
+
+Interesting connection: summing 1 to 100 with a for loop is essentially a discrete Riemann sum. Physics background making C feel surprisingly familiar.
+
+3 days logged. 57 remaining. Every day documented.</div>
+  <div class="cap-tags">#Mechatronics #CProgramming #EmbeddedSystems #LearnInPublic #EngineeringCommunity #Functions #CareerDevelopment #Day3 #Robotics #GrowthMindset</div>
+</div>
+
+<script>
+  function copyText(id) {
+    const el = document.getElementById(id);
+    const panel = el.closest('.caption-box');
+    const btn = panel.querySelector('.copy-btn');
+    navigator.clipboard.writeText(el.innerText).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Done';
+      btn.style.background = '#10b981';
+      setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 2000);
+    });
+  }
+</script>
+</body>
+</html>

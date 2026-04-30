@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Routine — Stage 0 & 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f7f4;
+    --white: #ffffff;
+    --ink: #111010;
+    --muted: #888;
+    --border: #e8e6e1;
+    --s0: #e05a1a;
+    --s0-light: #fff4ef;
+    --s1: #1a6dd4;
+    --s1-light: #eff5ff;
+    --green: #16a34a;
+    --green-light: #f0fdf4;
+    --amber: #d97706;
+    --amber-light: #fffbeb;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    padding: 48px 20px 80px;
+  }
+
+  .page {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    margin-bottom: 40px;
+    animation: rise 0.5s ease both;
+  }
+
+  .header-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  .badge-s0 { background: var(--s0-light); color: var(--s0); }
+  .badge-s1 { background: var(--s1-light); color: var(--s1); }
+  .badge-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--border); }
+
+  .header h1 {
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+
+  .header-sub {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  /* ── STATS ROW ── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 36px;
+    animation: rise 0.5s 0.05s ease both;
+  }
+
+  .stat {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── PHASE TABS ── */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 24px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 5px;
+    animation: rise 0.5s 0.1s ease both;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    transition: all 0.2s;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .tab.active-s0 { background: var(--s0); color: #fff; }
+  .tab.active-s1 { background: var(--s1); color: #fff; }
+  .tab:hover:not(.active-s0):not(.active-s1) { background: var(--bg); color: var(--ink); }
+
+  /* ── WEEK GRID ── */
+  .week-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 28px;
+    animation: rise 0.5s 0.15s ease both;
+  }
+
+  .day-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .day-header {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+
+  .day-name {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+
+  .day-num {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+
+  /* ── SESSION BLOCKS ── */
+  .session {
+    border-radius: 8px;
+    padding: 10px 10px;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .session::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+  }
+
+  .session.theory { background: var(--s0-light); border-color: #f5c9ae; }
+  .session.theory::before { background: var(--s0); }
+
+  .session.practice { background: var(--s1-light); border-color: #bdd6f8; }
+  .session.practice::before { background: var(--s1); }
+
+  .session.build { background: var(--green-light); border-color: #a7f3c0; }
+  .session.build::before { background: var(--green); }
+
+  .session.review { background: var(--amber-light); border-color: #fde68a; }
+  .session.review::before { background: var(--amber); }
+
+  .session-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 3px;
+    letter-spacing: 0.5px;
+  }
+
+  .session-title {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 3px;
+  }
+
+  .session-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.4;
+    font-weight: 400;
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    animation: rise 0.5s 0.2s ease both;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+
+  /* ── DAILY STRUCTURE ── */
+  .structure {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    animation: rise 0.5s 0.25s ease both;
+  }
+
+  .structure-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .structure-header h2 {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .structure-header span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .time-row {
+    display: grid;
+    grid-template-columns: 90px 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  .time-row:last-child { border-bottom: none; }
+  .time-row:hover { background: var(--bg); }
+
+  .time-slot {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .time-activity {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .time-note {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: right;
+    font-weight: 400;
+  }
+
+  .time-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── WEEKLY MILESTONES ── */
+  .milestones {
+    animation: rise 0.5s 0.3s ease both;
+  }
+
+  .milestone-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .milestone-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .milestone-row {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 12px;
+    align-items: start;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: transform 0.2s;
+  }
+
+  .milestone-row:hover { transform: translateX(3px); }
+
+  .m-week {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 0;
+    text-align: center;
+    border-radius: 5px;
+    line-height: 1.2;
+  }
+
+  .m-content {}
+  .m-goal { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .m-detail { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* ── PHASE PANELS ── */
+  .phase-panel { display: none; }
+  .phase-panel.active { display: block; }
+
+  /* ── TIPS BOX ── */
+  .tips {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-top: 28px;
+    animation: rise 0.5s 0.35s ease both;
+  }
+
+  .tips h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    opacity: 0.6;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+
+  .tips-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .tip-item {
+    display: flex;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    align-items: flex-start;
+  }
+
+  .tip-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── ANIM ── */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 600px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .week-grid { grid-template-columns: repeat(3, 1fr); }
+    .tips-grid { grid-template-columns: 1fr; }
+    .time-row { grid-template-columns: 72px 1fr; }
+    .time-note { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-meta">
+      <span class="badge badge-s0">Stage 0</span>
+      <span class="badge-dot"></span>
+      <span class="badge badge-s1">Stage 1</span>
+    </div>
+    <h1>Daily Study Routine</h1>
+    <p class="header-sub">3 hours · 5 days a week · Months 0 – 3</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-val" style="color:var(--s0);">3h</div>
+      <div class="stat-label">Per Day</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" style="color:var(--s1);">15h</div>
+      <div class="stat-label">Per Week</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">~60h</div>
+      <div class="stat-label">Stage 0 Total</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">~120h</div>
+      <div class="stat-label">Stage 1 Total</div>
+    </div>
+  </div>
+
+  <!-- DAILY TIME STRUCTURE -->
+  <div class="structure">
+    <div class="structure-header">
+      <h2>Daily 3-Hour Block</h2>
+      <span>Fixed structure every session</span>
+    </div>
+    <div class="time-row">
+      <span class="time-slot">0:00 – 0:30</span>
+      <span class="time-activity">🔁 Review Yesterday</span>
+      <span class="time-tag" style="background:var(--amber-light);color:var(--amber);">30 MIN</span>
+    </div>
+    <div class="time-row">
+      <span class="time-slot">0:30 – 1:30</span>
+      <span class="time-activity">📖 Learn — Theory / Watch / Read</span>
+      <span class="time-tag" style="background:var(--s0-light);color:var(--s0);">60 MIN</span>
+    </div>
+    <div class="time-row">
+      <span class="time-slot">1:30 – 2:45</span>
+      <span class="time-activity">⌨️ Hands-On — Code / Build / Debug</span>
+      <span class="time-tag" style="background:var(--s1-light);color:var(--s1);">75 MIN</span>
+    </div>
+    <div class="time-row">
+      <span class="time-slot">2:45 – 3:00</span>
+      <span class="time-activity">📝 Log What You Learned</span>
+      <span class="time-tag" style="background:var(--green-light);color:var(--green);">15 MIN</span>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active-s0" onclick="showPhase('s0')">Stage 0 — Foundations (Month 1)</button>
+    <button class="tab" onclick="showPhase('s1a')">Stage 1A — Arduino Basics (Month 2)</button>
+    <button class="tab" onclick="showPhase('s1b')">Stage 1B — Projects (Month 3)</button>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--s0);"></div>Theory / Concepts</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--s1);"></div>Coding Practice</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green);"></div>Build / Hardware</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber);"></div>Review / Consolidate</div>
+  </div>
+
+  <!-- ══ PHASE: STAGE 0 ══ -->
+  <div class="phase-panel active" id="panel-s0">
+    <p class="week-label">Month 1 — Stage 0 · Week-by-week</p>
+
+    <!-- WEEK 1 -->
+    <div class="week-label" style="margin-top:0; color: var(--s0);">WEEK 1 — C Programming Core</div>
+    <div class="week-grid">
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Mon</div><div class="day-num">1</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">C Basics</div>
+          <div class="session-desc">Variables, types, printf, scanf</div>
+        </div>
+        <div class="session practice">
+          <div class="session-time">CODE · 75 MIN</div>
+          <div class="session-title">CS50 Week 1</div>
+          <div class="session-desc">Setup, hello world, exercises</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Tue</div><div class="day-num">2</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">Control Flow</div>
+          <div class="session-desc">if/else, loops, switch</div>
+        </div>
+        <div class="session practice">
+          <div class="session-time">CODE · 75 MIN</div>
+          <div class="session-title">Loop Exercises</div>
+          <div class="session-desc">Write 5 programs using loops</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Wed</div><div class="day-num">3</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">Functions</div>
+          <div class="session-desc">Declarations, args, return, scope</div>
+        </div>
+        <div class="session practice">
+          <div class="session-time">CODE · 75 MIN</div>
+          <div class="session-title">Refactor Practice</div>
+          <div class="session-desc">Rewrite day 2 code with functions</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Thu</div><div class="day-num">4</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">Arrays & Strings</div>
+          <div class="session-desc">Arrays, char arrays, indexing</div>
+        </div>
+        <div class="session practice">
+          <div class="session-time">CODE · 75 MIN</div>
+          <div class="session-title">Array Programs</div>
+          <div class="session-desc">Sort, search, string operations</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Fri</div><div class="day-num">5</div></div>
+        <div class="session review">
+          <div class="session-time">REVIEW · 60 MIN</div>
+          <div class="session-title">Week 1 Recap</div>
+          <div class="session-desc">Re-read notes, fix gaps</div>
+        </div>
+        <div class="session practice">
+          <div class="session-time">CODE · 75 MIN</div>
+          <div class="session-title">Mini Challenge</div>
+          <div class="session-desc">Build a calculator in C from scratch</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 2 -->
+    <div class="week-label" style="color:var(--s0);">WEEK 2 — Pointers, Structs & Memory</div>
+    <div class="week-grid">
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Mon</div><div class="day-num">6</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">Pointers</div>
+          <div class="session-desc">Address, dereference, pointer math</div>
+        </div>
+        <div class="session practice">
+          <div class="session-time">CODE · 75 MIN</div>
+          <div class="session-title">Pointer Drills</div>
+          <div class="session-desc">Swap, pass-by-ref exercises</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Tue</div><div class="day-num">7</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">Structs</div>
+          <div class="session-desc">Define, access members, typedef</div>
+        </div>
+        <div class="session practice">
+          <div class="session-time">CODE · 75 MIN</div>
+          <div class="session-title">Struct Programs</div>
+          <div class="session-desc">Model a sensor with a struct</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Wed</div><div class="day-num">8</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">Memory & Headers</div>
+          <div class="session-desc">Stack vs heap, .h files, includes</div>
+        </div>
+        <div class="session practice">
+          <div class="session-time">CODE · 75 MIN</div>
+          <div class="session-title">Multi-file C</div>
+          <div class="session-desc">Split a program into .h + .c files</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Thu</div><div class="day-num">9</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">Bit Operations</div>
+          <div class="session-desc">AND, OR, XOR, shift — critical for embedded</div>
+        </div>
+        <div class="session practice">
+          <div class="session-time">CODE · 75 MIN</div>
+          <div class="session-title">Bitmasking</div>
+          <div class="session-desc">Set, clear, toggle individual bits</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Fri</div><div class="day-num">10</div></div>
+        <div class="session review">
+          <div class="session-time">REVIEW · 60 MIN</div>
+          <div class="session-title">Week 2 Review</div>
+          <div class="session-desc">Re-do any failed exercises</div>
+        </div>
+        <div class="session build">
+          <div class="session-time">BUILD · 75 MIN</div>
+          <div class="session-title">Mini Project</div>
+          <div class="session-desc">C program: sensor struct + bit flags</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 3 -->
+    <div class="week-label" style="color:var(--s0);">WEEK 3 — Python + Linux + Git</div>
+    <div class="week-grid">
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Mon</div><div class="day-num">11</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">Python Basics</div>
+          <div class="session-desc">Syntax, lists, dicts, loops</div>
+        </div>
+        <div class="session practice">
+          <div class="session-time">CODE · 75 MIN</div>
+          <div class="session-title">Python Exercises</div>
+          <div class="session-desc">10 short scripts from scratch</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Tue</div><div class="day-num">12</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">Python Files & NumPy</div>
+          <div class="session-desc">Read/write files, arrays, math ops</div>
+        </div>
+        <div class="session practice">
+          <div class="session-time">CODE · 75 MIN</div>
+          <div class="session-title">Data Logger</div>
+          <div class="session-desc">Parse a CSV and plot with Matplotlib</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Wed</div><div class="day-num">13</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">Linux CLI</div>
+          <div class="session-desc">cd, ls, cat, grep, chmod, SSH basics</div>
+        </div>
+        <div class="session practice">
+          <div class="session-time">CODE · 75 MIN</div>
+          <div class="session-title">Terminal Drills</div>
+          <div class="session-desc">Navigate, write bash scripts, use man</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Thu</div><div class="day-num">14</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">Git Core</div>
+          <div class="session-desc">init, add, commit, push, branch</div>
+        </div>
+        <div class="session practice">
+          <div class="session-time">CODE · 75 MIN</div>
+          <div class="session-title">GitHub Repo</div>
+          <div class="session-desc">Push all your C programs to GitHub</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Fri</div><div class="day-num">15</div></div>
+        <div class="session review">
+          <div class="session-time">REVIEW · 60 MIN</div>
+          <div class="session-title">Week 3 Recap</div>
+          <div class="session-desc">Polish GitHub repos, fix lint issues</div>
+        </div>
+        <div class="session build">
+          <div class="session-time">BUILD · 75 MIN</div>
+          <div class="session-title">Python + Git Project</div>
+          <div class="session-desc">Python data analysis script, committed to GitHub</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 4 -->
+    <div class="week-label" style="color:var(--s0);">WEEK 4 — Arduino Setup + Stage 1 Handoff</div>
+    <div class="week-grid">
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Mon</div><div class="day-num">16</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">What is a Microcontroller?</div>
+          <div class="session-desc">CPU, flash, RAM, peripherals, clocks</div>
+        </div>
+        <div class="session build">
+          <div class="session-time">BUILD · 75 MIN</div>
+          <div class="session-title">Arduino IDE Setup</div>
+          <div class="session-desc">Install, upload blink, verify serial</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Tue</div><div class="day-num">17</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">Digital I/O + GPIO</div>
+          <div class="session-desc">Pinout, pinMode, pull-ups, voltage levels</div>
+        </div>
+        <div class="session build">
+          <div class="session-time">BUILD · 75 MIN</div>
+          <div class="session-title">Button + LED</div>
+          <div class="session-desc">Button toggles LED without delay()</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Wed</div><div class="day-num">18</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">ADC Concepts</div>
+          <div class="session-desc">Resolution, reference, sampling rate</div>
+        </div>
+        <div class="session build">
+          <div class="session-time">BUILD · 75 MIN</div>
+          <div class="session-title">Potentiometer Read</div>
+          <div class="session-desc">analogRead → Serial Monitor output</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Thu</div><div class="day-num">19</div></div>
+        <div class="session theory">
+          <div class="session-time">THEORY · 60 MIN</div>
+          <div class="session-title">PWM Theory</div>
+          <div class="session-desc">Duty cycle, frequency, analogWrite</div>
+        </div>
+        <div class="session build">
+          <div class="session-time">BUILD · 75 MIN</div>
+          <div class="session-title">LED Dimmer</div>
+          <div class="session-desc">Pot → ADC → map() → PWM → LED</div>
+        </div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Fri</div><div class="day-num">20</div></div>
+        <div class="session review">
+          <div class="session-time">REVIEW · 60 MIN</div>
+          <div class="session-title">Stage 0 Complete</div>
+          <div class="session-desc">Self-assess all checklist items</div>
+        </div>
+        <div class="session build">
+          <div class="session-time">BUILD · 75 MIN</div>
+          <div class="session-title">🎉 Milestone</div>
+          <div class="session-desc">Working LED dimmer + push to GitHub</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MILESTONES -->
+    <div class="milestones" style="margin-top:28px;">
+      <div class="milestone-title">Stage 0 — Weekly Milestones</div>
+      <div class="milestone-list">
+        <div class="milestone-row">
+          <div class="m-week" style="background:var(--s0-light);color:var(--s0);">WK 1</div>
+          <div class="m-content">
+            <div class="m-goal">Write a C program that uses functions, loops, and arrays</div>
+            <div class="m-detail">Build a calculator. Commit to GitHub. You now think in C.</div>
+          </div>
+        </div>
+        <div class="milestone-row">
+          <div class="m-week" style="background:var(--s0-light);color:var(--s0);">WK 2</div>
+          <div class="m-content">
+            <div class="m-goal">Understand pointers, structs, and bitmasking</div>
+            <div class="m-detail">Model a sensor data structure. Set/clear bits manually. This is 80% of embedded firmware.</div>
+          </div>
+        </div>
+        <div class="milestone-row">
+          <div class="m-week" style="background:var(--s0-light);color:var(--s0);">WK 3</div>
+          <div class="m-content">
+            <div class="m-goal">Python script that reads, processes, and plots data</div>
+            <div class="m-detail">Git repo live on GitHub. Can SSH into a Linux machine.</div>
+          </div>
+        </div>
+        <div class="milestone-row">
+          <div class="m-week" style="background:var(--s0-light);color:var(--s0);">WK 4</div>
+          <div class="m-content">
+            <div class="m-goal">LED Dimmer working on real hardware</div>
+            <div class="m-detail">Your first physical analog-digital-analog loop. Stage 0 complete.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PHASE: STAGE 1A ══ -->
+  <div class="phase-panel" id="panel-s1a">
+    <p class="week-label">Month 2 — Stage 1A · Arduino Protocols & Sensors</p>
+
+    <div class="week-label" style="color:var(--s1);">WEEK 5 — Serial Comms + Temperature Sensor</div>
+    <div class="week-grid">
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Mon</div><div class="day-num">1</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">UART Deep Dive</div><div class="session-desc">Baud, TX/RX, framing, Serial Monitor</div></div>
+        <div class="session practice"><div class="session-time">CODE</div><div class="session-title">Serial Commands</div><div class="session-desc">Control LED via typed serial commands</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Tue</div><div class="day-num">2</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">I²C Protocol</div><div class="session-desc">SDA/SCL, addresses, read/write flow</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">I²C Scanner</div><div class="session-desc">Detect all I²C devices on the bus</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Wed</div><div class="day-num">3</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">DHT11/22 Sensor</div><div class="session-desc">Read the datasheet before touching code</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Temp + Humidity</div><div class="session-desc">Read and display on serial every 2s</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Thu</div><div class="day-num">4</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">OLED Displays</div><div class="session-desc">SSD1306, Adafruit library, draw text/graphics</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">OLED Dashboard</div><div class="session-desc">Show temp + humidity live on screen</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Fri</div><div class="day-num">5</div></div>
+        <div class="session review"><div class="session-time">REVIEW</div><div class="session-title">Week 5 Recap</div><div class="session-desc">Debug any wiring / code issues</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Temperature Logger v1</div><div class="session-desc">Sensor + OLED + Serial output combined</div></div>
+      </div>
+    </div>
+
+    <div class="week-label" style="color:var(--s1);">WEEK 6 — Servo Motors + SPI</div>
+    <div class="week-grid">
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Mon</div><div class="day-num">6</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">Servo Basics</div><div class="session-desc">PWM timing, 50Hz, 1–2ms pulsewidth</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Servo Sweep</div><div class="session-desc">0° → 180° → 0°, controlled speed</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Tue</div><div class="day-num">7</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">Joystick Input</div><div class="session-desc">2-axis ADC, center deadzone, mapping</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Joystick Servo</div><div class="session-desc">Joystick XY → 2 servo angles</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Wed</div><div class="day-num">8</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">SPI Protocol</div><div class="session-desc">MOSI/MISO/SCLK/CS, modes, speed</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">SPI Device</div><div class="session-desc">Read SPI sensor or write SPI display</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Thu</div><div class="day-num">9</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">Interrupts</div><div class="session-desc">attachInterrupt, ISR rules, volatile vars</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Button Interrupt</div><div class="session-desc">Replace polling with hardware interrupt</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Fri</div><div class="day-num">10</div></div>
+        <div class="session review"><div class="session-time">REVIEW</div><div class="session-title">Week 6 Recap</div><div class="session-desc">Re-wire, re-read, document circuits</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Servo Controller</div><div class="session-desc">Joystick → 2 servos + OLED angle display</div></div>
+      </div>
+    </div>
+
+    <div class="week-label" style="color:var(--s1);">WEEK 7 — DC Motors + Motor Driver</div>
+    <div class="week-grid">
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Mon</div><div class="day-num">11</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">DC Motor Physics</div><div class="session-desc">Back-EMF, stall current, H-bridge</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">L298N Wiring</div><div class="session-desc">Wire motor driver, control direction + speed</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Tue</div><div class="day-num">12</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">Encoders</div><div class="session-desc">Quadrature, pulses per rev, speed math</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Speed Measurement</div><div class="session-desc">Count encoder pulses → calculate RPM</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Wed</div><div class="day-num">13</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">millis() Timing</div><div class="session-desc">Non-blocking code, state machines</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Multi-Task Loop</div><div class="session-desc">Motor + sensor + serial all without delay()</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Thu</div><div class="day-num">14</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">IMU Sensors</div><div class="session-desc">MPU6050, accelerometer, gyroscope, I²C</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">IMU Reader</div><div class="session-desc">Read pitch + roll, display on OLED</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Fri</div><div class="day-num">15</div></div>
+        <div class="session review"><div class="session-time">REVIEW</div><div class="session-time">REVIEW</div><div class="session-title">Week 7 Recap</div><div class="session-desc">Consolidate all motor knowledge</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Motor + IMU Combo</div><div class="session-desc">Tilt angle → motor speed mapping</div></div>
+      </div>
+    </div>
+
+    <div class="week-label" style="color:var(--s1);">WEEK 8 — Datasheets + Integration</div>
+    <div class="week-grid">
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Mon</div><div class="day-num">16</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">Datasheet Bootcamp</div><div class="session-desc">Read electrical specs, register maps, timing</div></div>
+        <div class="session practice"><div class="session-time">CODE</div><div class="session-title">From Scratch</div><div class="session-desc">Driver for a new sensor — no library</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Tue</div><div class="day-num">17</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">Power & Protection</div><div class="session-desc">Current limits, flyback diodes, decoupling caps</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Safe Wiring</div><div class="session-desc">Add diodes + caps to your motor circuit</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Wed</div><div class="day-num">18</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Line Robot — Sensors</div><div class="session-desc">Wire IR sensor array, test detection</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Line Robot — Motors</div><div class="session-desc">Wire differential drive, test each wheel</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Thu</div><div class="day-num">19</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Line Robot — Logic</div><div class="session-desc">if/else logic to follow a line</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Line Robot — Tune</div><div class="session-desc">Adjust speed, sensor threshold, turns</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Fri</div><div class="day-num">20</div></div>
+        <div class="session build"><div class="session-time">BUILD · CAPSTONE</div><div class="session-title">🎉 Line Follower DONE</div><div class="session-desc">Full demo. Film it. Post to GitHub.</div></div>
+        <div class="session review"><div class="session-time">REVIEW</div><div class="session-title">Stage 1A Review</div><div class="session-desc">Self-assess all skill checkboxes</div></div>
+      </div>
+    </div>
+
+    <div class="milestones" style="margin-top:28px;">
+      <div class="milestone-title">Stage 1A — Weekly Milestones</div>
+      <div class="milestone-list">
+        <div class="milestone-row">
+          <div class="m-week" style="background:var(--s1-light);color:var(--s1);">WK 5</div>
+          <div class="m-content"><div class="m-goal">Temperature Logger with OLED display working</div><div class="m-detail">Combines I²C sensor + I²C display + UART serial. Three protocols mastered.</div></div>
+        </div>
+        <div class="milestone-row">
+          <div class="m-week" style="background:var(--s1-light);color:var(--s1);">WK 6</div>
+          <div class="m-content"><div class="m-goal">Servo Controller — joystick drives 2 servos</div><div class="m-detail">ADC + PWM + SPI in one project. Hardware interrupt used for buttons.</div></div>
+        </div>
+        <div class="milestone-row">
+          <div class="m-week" style="background:var(--s1-light);color:var(--s1);">WK 7</div>
+          <div class="m-content"><div class="m-goal">DC motor speed measured and controlled</div><div class="m-detail">H-bridge + encoder + non-blocking millis() timing. IMU data on OLED.</div></div>
+        </div>
+        <div class="milestone-row">
+          <div class="m-week" style="background:var(--s1-light);color:var(--s1);">WK 8</div>
+          <div class="m-content"><div class="m-goal">🏁 Line-following robot navigates a track</div><div class="m-detail">Stage 1A capstone. Film and commit. You are now a real embedded developer.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PHASE: STAGE 1B ══ -->
+  <div class="phase-panel" id="panel-s1b">
+    <p class="week-label">Month 3 — Stage 1B · Consolidation + Polish</p>
+
+    <div class="week-label" style="color:var(--green);">WEEK 9 — Improve the Line Follower</div>
+    <div class="week-grid">
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Mon</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Add PID Logic</div><div class="session-desc">Replace if/else with a simple P controller</div></div>
+        <div class="session review"><div class="session-time">REVIEW</div><div class="session-title">Tune P gain</div><div class="session-desc">Observe oscillation, adjust until smooth</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Tue</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Serial Tuner</div><div class="session-desc">Adjust P gain live via serial — no reupload</div></div>
+        <div class="session practice"><div class="session-time">CODE</div><div class="session-title">Clean Code</div><div class="session-desc">Refactor, comment, organize into functions</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Wed</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">OLED Speedometer</div><div class="session-desc">Show speed + P-error live on display</div></div>
+        <div class="session review"><div class="session-time">REVIEW</div><div class="session-title">Test on Track</div><div class="session-desc">Multiple laps, log performance</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Thu</div></div>
+        <div class="session theory"><div class="session-time">THEORY</div><div class="session-title">Intro to PID</div><div class="session-desc">Read about I and D terms, why they matter</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Add I + D Terms</div><div class="session-desc">Full PID on line follower — tune all 3 gains</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Fri</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Final Demo</div><div class="session-desc">Best lap time. Film. Document gains.</div></div>
+        <div class="session review"><div class="session-time">REVIEW</div><div class="session-title">Week 9 Write-up</div><div class="session-desc">README on GitHub with photos + video link</div></div>
+      </div>
+    </div>
+
+    <div class="week-label" style="color:var(--green);">WEEKS 10–12 — Free Build + Portfolio</div>
+    <div class="week-grid">
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Mon</div></div>
+        <div class="session theory"><div class="session-time">CHOOSE A PROJECT</div><div class="session-title">Pick One</div><div class="session-desc">Weather station, servo arm, motor controller, or your own idea</div></div>
+        <div class="session review"><div class="session-time">PLAN</div><div class="session-title">Spec it out</div><div class="session-desc">List components, draw block diagram</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Tue</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Hardware First</div><div class="session-desc">Wire, test each component alone</div></div>
+        <div class="session practice"><div class="session-time">CODE</div><div class="session-title">Core Logic</div><div class="session-desc">Main loop, sensor reads, actuator output</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Wed</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Integrate</div><div class="session-desc">Combine all subsystems, debug</div></div>
+        <div class="session practice"><div class="session-time">CODE</div><div class="session-title">Add Features</div><div class="session-desc">Display, logging, serial control</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Thu</div></div>
+        <div class="session build"><div class="session-time">BUILD</div><div class="session-title">Polish</div><div class="session-desc">Cable management, enclosure if possible</div></div>
+        <div class="session practice"><div class="session-time">CODE</div><div class="session-title">Clean + Comment</div><div class="session-desc">Make it readable by someone else</div></div>
+      </div>
+      <div class="day-col">
+        <div class="day-header"><div class="day-name">Fri</div></div>
+        <div class="session review"><div class="session-time">DOCUMENT</div><div class="session-title">GitHub README</div><div class="session-desc">Photos, schematic, video, key learnings</div></div>
+        <div class="session theory"><div class="session-time">PREVIEW</div><div class="session-title">Stage 2 Prep</div><div class="session-desc">Read: what is ESP32? What is STM32?</div></div>
+      </div>
+    </div>
+
+    <div class="milestones" style="margin-top:28px;">
+      <div class="milestone-title">Stage 1B — End of Month 3 Goals</div>
+      <div class="milestone-list">
+        <div class="milestone-row">
+          <div class="m-week" style="background:var(--green-light);color:var(--green);">WK 9</div>
+          <div class="m-content"><div class="m-goal">Line follower running real PID — tuned and documented</div><div class="m-detail">Your first taste of control theory in hardware. This previews Stage 4.</div></div>
+        </div>
+        <div class="milestone-row">
+          <div class="m-week" style="background:var(--green-light);color:var(--green);">WK 10–12</div>
+          <div class="m-content"><div class="m-goal">One self-chosen project — built, polished, on GitHub</div><div class="m-detail">Portfolio piece #1. Shows initiative and real problem-solving beyond tutorials.</div></div>
+        </div>
+        <div class="milestone-row">
+          <div class="m-week" style="background:var(--green-light);color:var(--green);">END</div>
+          <div class="m-content"><div class="m-goal">Stage 1 complete — ready for ESP32 + STM32</div><div class="m-detail">2 GitHub repos, 4+ working projects, all core protocols understood.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIPS -->
+  <div class="tips">
+    <h3>Study Rules That Actually Work</h3>
+    <div class="tips-grid">
+      <div class="tip-item"><span class="tip-icon">⏱</span><span>Start your 3h block at the same time every day. Consistency beats intensity.</span></div>
+      <div class="tip-item"><span class="tip-icon">🔥</span><span>First 30 min = review. Never start fresh. Always revisit yesterday first.</span></div>
+      <div class="tip-item"><span class="tip-icon">⌨️</span><span>Type every code example yourself. Copy-paste kills retention in embedded.</span></div>
+      <div class="tip-item"><span class="tip-icon">📸</span><span>Photo every breadboard circuit. You will forget the wiring at 2am.</span></div>
+      <div class="tip-item"><span class="tip-icon">🐛</span><span>Spend at least 20 min debugging before googling. Debugging IS the skill.</span></div>
+      <div class="tip-item"><span class="tip-icon">📝</span><span>Last 15 min = write 3 sentences: what you did, what broke, what you learned.</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function showPhase(phase) {
+    document.querySelectorAll('.phase-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.remove('active-s0', 'active-s1');
+    });
+
+    document.getElementById('panel-' + phase).classList.add('active');
+
+    const tabs = document.querySelectorAll('.tab');
+    if (phase === 's0') tabs[0].classList.add('active-s0');
+    else if (phase === 's1a') tabs[1].classList.add('active-s1');
+    else if (phase === 's1b') tabs[2].classList.add('active-s1');
+  }
+</script>
+</body>
+</html>

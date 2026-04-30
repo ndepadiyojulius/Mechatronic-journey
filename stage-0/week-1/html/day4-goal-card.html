@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 4 Goal — Nde Julius</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #050608;
+    font-family: 'Barlow Condensed', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 60px;
+    gap: 16px;
+  }
+
+  .page-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: #333;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .page-label span { color: #06b6d4; }
+
+  /* 9:16 portrait card */
+  .card {
+    width: 100%;
+    max-width: 360px;
+    aspect-ratio: 9 / 16;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 28px 24px;
+    background: #060b10;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 85% 8%, rgba(6,182,212,0.22) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 10% 92%, rgba(14,165,233,0.12) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+
+  .big-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 280px;
+    color: rgba(6,182,212,0.05);
+    position: absolute;
+    bottom: -40px;
+    right: -30px;
+    letter-spacing: -8px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .top { z-index: 1; }
+  .middle { z-index: 1; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+  .bottom { z-index: 1; }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #06b6d4;
+  }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #06b6d4; }
+
+  .day-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #444;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 78px;
+    line-height: 0.85;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+
+  .title span { color: #06b6d4; }
+
+  .subtitle {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    letter-spacing: 3px;
+    color: #fff;
+    line-height: 1.1;
+    margin-top: 8px;
+  }
+
+  .subtitle span { color: #06b6d4; }
+
+  .desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #555;
+    line-height: 1.7;
+    margin-top: 4px;
+  }
+
+  /* TIME BLOCK */
+  .time-block {
+    background: rgba(6,182,212,0.07);
+    border: 1px solid rgba(6,182,212,0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .time-icon { font-size: 24px; flex-shrink: 0; }
+
+  .time-col {}
+  .time-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: #06b6d4;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .time-row-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #888;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    line-height: 1.5;
+  }
+
+  .time-row-item:last-child { border-bottom: none; }
+  .time-row-item span { color: #06b6d4; font-size: 11px; }
+
+  /* TODAY'S PROGRAMS */
+  .programs-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: #444;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .prog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .prog-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 7px;
+    padding: 9px 12px;
+  }
+
+  .prog-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: rgba(6,182,212,0.35);
+    width: 16px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .prog-text { font-size: 13px; font-weight: 600; color: #ccc; line-height: 1.3; }
+  .prog-sub { font-size: 10px; color: #555; font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
+
+  .prog-arrow {
+    margin-left: auto;
+    font-size: 14px;
+    color: rgba(6,182,212,0.4);
+    flex-shrink: 0;
+  }
+
+  /* STATS ROW */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .stat {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid #1a1f2e;
+    border-radius: 8px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+
+  .stat-v {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    line-height: 1;
+    margin-bottom: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-l {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* AUTHOR */
+  .author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .av {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: #06b6d4;
+    color: #000;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .av-name { font-size: 12px; font-weight: 700; color: #fff; }
+  .av-role { font-size: 10px; color: #555; font-weight: 300; }
+</style>
+</head>
+<body>
+
+<div class="page-label">Nde Julius · <span>Day 4 Goal</span> · Screenshot & Post</div>
+
+<div class="card">
+  <div class="grid"></div>
+  <div class="big-num">4</div>
+
+  <!-- TOP -->
+  <div class="top">
+    <div class="tag">
+      <div class="dot"></div>
+      STAGE 0 · WEEK 1 · THU · TODAY'S GOAL
+    </div>
+  </div>
+
+  <!-- MIDDLE -->
+  <div class="middle">
+
+    <div>
+      <div class="day-label">MECHATRONICS JOURNEY · DAY</div>
+      <div class="title">FOUR<br><span>04</span></div>
+      <div class="subtitle">ARRAYS &<br><span>STRINGS</span></div>
+      <div class="desc">Indexing · char arrays · string operations<br>Making C work with lists of data</div>
+    </div>
+
+    <!-- TIME BLOCK -->
+    <div class="time-block">
+      <div class="time-icon">⏱</div>
+      <div class="time-col" style="flex:1;">
+        <div class="time-title">3-Hour Block</div>
+        <div class="time-row-item">0:00 – 0:30 <span>Review Day 3</span></div>
+        <div class="time-row-item">0:30 – 1:30 <span>Theory · Arrays</span></div>
+        <div class="time-row-item">1:30 – 2:45 <span>Code · Build</span></div>
+        <div class="time-row-item">2:45 – 3:00 <span>Log + Screenshot</span></div>
+      </div>
+    </div>
+
+    <!-- PROGRAMS -->
+    <div>
+      <div class="programs-label">Today's Programs to Write</div>
+      <div class="prog-list">
+        <div class="prog-item">
+          <div class="prog-num">1</div>
+          <div>
+            <div class="prog-text">Declare & print an array</div>
+            <div class="prog-sub">int arr[] · index 0,1,2...</div>
+          </div>
+          <div class="prog-arrow">→</div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-num">2</div>
+          <div>
+            <div class="prog-text">Loop through an array</div>
+            <div class="prog-sub">for loop + arr[i]</div>
+          </div>
+          <div class="prog-arrow">→</div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-num">3</div>
+          <div>
+            <div class="prog-text">Find max value in array</div>
+            <div class="prog-sub">compare elements with if</div>
+          </div>
+          <div class="prog-arrow">→</div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-num">4</div>
+          <div>
+            <div class="prog-text">Char array — your name</div>
+            <div class="prog-sub">char name[] · string basics</div>
+          </div>
+          <div class="prog-arrow">→</div>
+        </div>
+        <div class="prog-item" style="border-color:rgba(6,182,212,0.2); background:rgba(6,182,212,0.05);">
+          <div class="prog-num" style="color:rgba(6,182,212,0.6);">5</div>
+          <div>
+            <div class="prog-text" style="color:#67e8f9;">Sort an array — bonus 🔥</div>
+            <div class="prog-sub">bubble sort with nested loops</div>
+          </div>
+          <div class="prog-arrow" style="color:#06b6d4;">🔥</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-v" style="color:#06b6d4;">3h</div>
+        <div class="stat-l">Goal Today</div>
+      </div>
+      <div class="stat">
+        <div class="stat-v" style="color:#10b981;">57</div>
+        <div class="stat-l">Days Left</div>
+      </div>
+      <div class="stat">
+        <div class="stat-v" style="color:#f59e0b;">WK1</div>
+        <div class="stat-l">Stage 0</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM -->
+  <div class="bottom">
+    <div class="author">
+      <div class="av">NJ</div>
+      <div>
+        <div class="av-name">Nde Julius</div>
+        <div class="av-role">Physics → Mechatronics · Day 4 of 60</div>
+      </div>
+      <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">#Day4</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

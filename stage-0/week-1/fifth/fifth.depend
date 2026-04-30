@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1777410554 source:e:\electronics and plcs and programx\c pro\fifth\main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+

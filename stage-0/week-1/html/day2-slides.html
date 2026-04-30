@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 2 Slides — Nde Julius</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #07090c;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 32px 16px 60px;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+
+  .controls-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 20px;
+  }
+
+  .ctrl-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #444;
+    text-transform: uppercase;
+  }
+
+  .ctrl-label span { color: #3b82f6; }
+
+  .slide-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #444;
+    letter-spacing: 1px;
+  }
+
+  .slide-counter em { color: #fff; font-style: normal; }
+
+  .slideshow { width: 100%; max-width: 420px; }
+
+  .track {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 20px;
+    touch-action: pan-y;
+  }
+
+  .slides-inner {
+    display: flex;
+    transition: transform 0.45s cubic-bezier(0.77, 0, 0.175, 1);
+    will-change: transform;
+  }
+
+  .slide {
+    min-width: 100%;
+    aspect-ratio: 1 / 1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 30px;
+    flex-shrink: 0;
+  }
+
+  /* ── SLIDE BACKGROUNDS ── */
+  .s1 { background: #080c12; }
+  .s1::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 85% 15%, rgba(59,130,246,0.2) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 10% 85%, rgba(99,102,241,0.12) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .s2 { background: #090c10; }
+  .s2::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 65% 55% at 50% 100%, rgba(59,130,246,0.12) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .s3 { background: #080d09; }
+  .s3::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top right, rgba(16,185,129,0.14) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  .s4 { background: #0d0a08; }
+  .s4::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at bottom left, rgba(245,158,11,0.12) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  .s5 { background: #0a080d; }
+  .s5::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(139,92,246,0.12) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  .s6 { background: #08090d; }
+  .s6::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top, rgba(59,130,246,0.1) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  .s7 { background: #080c0a; }
+  .s7::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 20% 30%, rgba(59,130,246,0.12) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 80% 80%, rgba(16,185,129,0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* Grid overlay */
+  .grid-overlay {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+  }
+
+  /* ── SHARED ELEMENTS ── */
+  .slide-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 1;
+  }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  .slide-middle {
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .slide-bottom { z-index: 1; }
+
+  .big-num {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: -2px;
+    line-height: 0.85;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .author-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .av {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  .av-name { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: #fff; }
+  .av-role { font-size: 9px; color: #555; font-weight: 300; }
+
+  .code-block {
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.75;
+    z-index: 1;
+  }
+
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .str { color: #79c0ff; }
+  .num { color: #f97316; }
+  .cmt { color: #4a5568; font-style: italic; }
+  .ty { color: #3b82f6; }
+  .op { color: #f5c842; }
+
+  /* DOTS */
+  .prog-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 16px;
+  }
+
+  .prog-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #222;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .prog-dot.active {
+    background: #3b82f6;
+    width: 22px;
+    border-radius: 3px;
+  }
+
+  /* NAV */
+  .nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    width: 100%;
+    max-width: 420px;
+    gap: 10px;
+  }
+
+  .nav-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #1a1f2e;
+    background: #0d1018;
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .nav-btn:hover:not(:disabled) { background: #141a28; }
+  .nav-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+  .nav-btn.next {
+    background: #3b82f6;
+    color: #fff;
+    border-color: #3b82f6;
+    font-weight: 700;
+  }
+
+  .nav-btn.next:hover:not(:disabled) { background: #2563eb; }
+
+  .hint {
+    margin-top: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #333;
+    letter-spacing: 1.5px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .hint span { color: #3b82f6; }
+</style>
+</head>
+<body>
+
+<div class="controls-top">
+  <span class="ctrl-label">Nde Julius · <span>Day 2</span></span>
+  <span class="slide-counter"><em id="cur">1</em> / 7</span>
+</div>
+
+<div class="slideshow">
+  <div class="track" id="track">
+    <div class="slides-inner" id="inner">
+
+      <!-- ════ SLIDE 1: COVER ════ -->
+      <div class="slide s1">
+        <div class="grid-overlay"></div>
+        <div class="big-num" style="font-size:200px; color:rgba(59,130,246,0.06); bottom:-20px; right:-15px;">02</div>
+
+        <div class="slide-tag" style="color:#3b82f6;">
+          <div class="dot" style="background:#3b82f6;"></div>
+          STAGE 0 · WEEK 1 · TUE
+        </div>
+
+        <div class="slide-middle" style="gap:10px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#444; letter-spacing:2px;">MECHATRONICS JOURNEY</div>
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:74px; line-height:0.88; letter-spacing:2px; color:#fff;">DAY<br><span style="color:#3b82f6;">TWO</span></div>
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:32px; color:#fff; letter-spacing:3px; margin-top:4px;">CONTROL<br><span style="color:#3b82f6;">FLOW</span></div>
+          <div style="font-size:12px; font-weight:300; color:#555; margin-top:8px; font-family:'JetBrains Mono',monospace; line-height:1.7;">if/else · for loops · while · switch<br>Making code think & repeat</div>
+        </div>
+
+        <div class="author-strip slide-bottom">
+          <div class="av" style="background:#3b82f6; color:#fff;">NJ</div>
+          <div>
+            <div class="av-name">Nde Julius</div>
+            <div class="av-role">Physics → Mechatronics · Day 2 of 60</div>
+          </div>
+          <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">SWIPE →</div>
+        </div>
+      </div>
+
+      <!-- ════ SLIDE 2: WHY THIS MATTERS ════ -->
+      <div class="slide s2">
+        <div class="slide-tag" style="color:#3b82f6;">
+          <div class="dot" style="background:#3b82f6;"></div>
+          WHY CONTROL FLOW MATTERS
+        </div>
+
+        <div class="slide-middle" style="gap:12px;">
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1.05;">THE BRAIN OF<br><span style="color:#3b82f6;">EVERY PROGRAM</span></div>
+
+          <div style="font-size:13px; font-weight:300; color:#666; font-family:'JetBrains Mono',monospace; line-height:1.7;">Without control flow, code runs top to bottom — once — and stops. That's not a robot. That's a rock.</div>
+
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:4px;">
+            <div style="display:flex; gap:12px; align-items:center; background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.15); border-radius:8px; padding:12px 14px;">
+              <span style="font-size:20px;">🤖</span>
+              <div style="font-size:12px; color:#aaa; font-family:'JetBrains Mono',monospace; line-height:1.6;"><span style="color:#3b82f6;">if</span> sensor detects wall → turn left</div>
+            </div>
+            <div style="display:flex; gap:12px; align-items:center; background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.15); border-radius:8px; padding:12px 14px;">
+              <span style="font-size:20px;">🌡️</span>
+              <div style="font-size:12px; color:#aaa; font-family:'JetBrains Mono',monospace; line-height:1.6;"><span style="color:#3b82f6;">while</span> temp > 80°C → run fan</div>
+            </div>
+            <div style="display:flex; gap:12px; align-items:center; background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.15); border-radius:8px; padding:12px 14px;">
+              <span style="font-size:20px;">💡</span>
+              <div style="font-size:12px; color:#aaa; font-family:'JetBrains Mono',monospace; line-height:1.6;"><span style="color:#3b82f6;">for</span> each LED → blink 3 times</div>
+            </div>
+          </div>
+
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#3b82f6; letter-spacing:1px; margin-top:4px;">This is literally how PLCs and microcontrollers work.</div>
+        </div>
+
+        <div class="author-strip slide-bottom">
+          <div class="av" style="background:#3b82f6; color:#fff;">NJ</div>
+          <div><div class="av-name">Nde Julius</div><div class="av-role">Day 2 · Stage 0</div></div>
+          <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">2 / 7</div>
+        </div>
+      </div>
+
+      <!-- ════ SLIDE 3: IF/ELSE ════ -->
+      <div class="slide s3">
+        <div class="slide-tag" style="color:#10b981;">
+          <div class="dot" style="background:#10b981;"></div>
+          IF / ELSE STATEMENTS
+        </div>
+
+        <div class="slide-middle" style="gap:12px;">
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1.05;">MAKE YOUR<br><span style="color:#10b981;">CODE DECIDE</span></div>
+
+          <div class="code-block">
+<span class="ty">int</span> temp <span class="op">=</span> <span class="num">85</span>;
+
+<span class="kw">if</span> (temp <span class="op">&gt;</span> <span class="num">80</span>) {
+    <span class="fn">printf</span>(<span class="str">"Fan ON\n"</span>);
+} <span class="kw">else if</span> (temp <span class="op">&gt;</span> <span class="num">60</span>) {
+    <span class="fn">printf</span>(<span class="str">"Warning\n"</span>);
+} <span class="kw">else</span> {
+    <span class="fn">printf</span>(<span class="str">"Normal\n"</span>);
+}</div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(16,185,129,0.25); background:rgba(16,185,129,0.06); color:#10b981;">if ( condition )</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(16,185,129,0.25); background:rgba(16,185,129,0.06); color:#10b981;">else if</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(16,185,129,0.25); background:rgba(16,185,129,0.06); color:#10b981;">else</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(16,185,129,0.25); background:rgba(16,185,129,0.06); color:#10b981;">== != &gt; &lt; &gt;= &lt;=</span>
+          </div>
+
+          <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px 12px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; line-height:1.6;">
+            ⚡ In embedded: this is your <span style="color:#10b981;">sensor decision logic</span>. Every robot, thermostat, and PLC uses exactly this.
+          </div>
+        </div>
+
+        <div class="author-strip slide-bottom">
+          <div class="av" style="background:#10b981; color:#000;">NJ</div>
+          <div><div class="av-name">Nde Julius</div><div class="av-role">Day 2 · Stage 0</div></div>
+          <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">3 / 7</div>
+        </div>
+      </div>
+
+      <!-- ════ SLIDE 4: FOR LOOP ════ -->
+      <div class="slide s4">
+        <div class="slide-tag" style="color:#f59e0b;">
+          <div class="dot" style="background:#f59e0b;"></div>
+          FOR LOOP
+        </div>
+
+        <div class="slide-middle" style="gap:12px;">
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1.05;">REPEAT WITH<br><span style="color:#f59e0b;">PRECISION</span></div>
+
+          <div class="code-block">
+<span class="cmt">// Blink LED 5 times</span>
+<span class="kw">for</span> (<span class="ty">int</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">5</span>; i<span class="op">++</span>) {
+    <span class="fn">printf</span>(<span class="str">"LED ON - blink %d\n"</span>, i<span class="op">+</span><span class="num">1</span>);
+}
+
+<span class="cmt">// Print a times table</span>
+<span class="kw">for</span> (<span class="ty">int</span> n <span class="op">=</span> <span class="num">1</span>; n <span class="op">&lt;=</span> <span class="num">10</span>; n<span class="op">++</span>) {
+    <span class="fn">printf</span>(<span class="str">"%d x 3 = %d\n"</span>, n, n<span class="op">*</span><span class="num">3</span>);
+}</div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; text-align:center;">
+            <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.2); border-radius:6px; padding:8px;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#f59e0b;">init</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; margin-top:2px;">i = 0</div>
+            </div>
+            <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.2); border-radius:6px; padding:8px;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#f59e0b;">condition</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; margin-top:2px;">i &lt; 5</div>
+            </div>
+            <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.2); border-radius:6px; padding:8px;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#f59e0b;">update</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; margin-top:2px;">i++</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="author-strip slide-bottom">
+          <div class="av" style="background:#f59e0b; color:#000;">NJ</div>
+          <div><div class="av-name">Nde Julius</div><div class="av-role">Day 2 · Stage 0</div></div>
+          <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">4 / 7</div>
+        </div>
+      </div>
+
+      <!-- ════ SLIDE 5: WHILE LOOP ════ -->
+      <div class="slide s5">
+        <div class="slide-tag" style="color:#8b5cf6;">
+          <div class="dot" style="background:#8b5cf6;"></div>
+          WHILE LOOP
+        </div>
+
+        <div class="slide-middle" style="gap:12px;">
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1.05;">LOOP UNTIL<br><span style="color:#8b5cf6;">CONDITION FAILS</span></div>
+
+          <div class="code-block">
+<span class="cmt">// Run motor while button pressed</span>
+<span class="ty">int</span> button <span class="op">=</span> <span class="num">1</span>;
+
+<span class="kw">while</span> (button <span class="op">==</span> <span class="num">1</span>) {
+    <span class="fn">printf</span>(<span class="str">"Motor running...\n"</span>);
+    button <span class="op">=</span> readButton();
+}
+<span class="fn">printf</span>(<span class="str">"Motor stopped.\n"</span>);
+
+<span class="cmt">// do-while: runs AT LEAST once</span>
+<span class="kw">do</span> {
+    <span class="fn">printf</span>(<span class="str">"Enter valid input\n"</span>);
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&amp;</span>input);
+} <span class="kw">while</span> (input <span class="op">&lt;</span> <span class="num">0</span>);</div>
+
+          <div style="background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.18); border-radius:8px; padding:10px 12px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; line-height:1.6;">
+            ⚡ The <span style="color:#8b5cf6;">main loop</span> of every Arduino sketch is literally a <span style="color:#8b5cf6;">while(1)</span> running forever.
+          </div>
+        </div>
+
+        <div class="author-strip slide-bottom">
+          <div class="av" style="background:#8b5cf6; color:#fff;">NJ</div>
+          <div><div class="av-name">Nde Julius</div><div class="av-role">Day 2 · Stage 0</div></div>
+          <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">5 / 7</div>
+        </div>
+      </div>
+
+      <!-- ════ SLIDE 6: SWITCH ════ -->
+      <div class="slide s6">
+        <div class="slide-tag" style="color:#3b82f6;">
+          <div class="dot" style="background:#3b82f6;"></div>
+          SWITCH STATEMENT
+        </div>
+
+        <div class="slide-middle" style="gap:12px;">
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1.05;">CLEAN MULTI-<br><span style="color:#3b82f6;">WAY DECISIONS</span></div>
+
+          <div class="code-block" style="font-size:10.5px;">
+<span class="ty">int</span> mode <span class="op">=</span> <span class="num">2</span>;
+
+<span class="kw">switch</span> (mode) {
+  <span class="kw">case</span> <span class="num">1</span>:
+    <span class="fn">printf</span>(<span class="str">"Manual mode\n"</span>);
+    <span class="kw">break</span>;
+  <span class="kw">case</span> <span class="num">2</span>:
+    <span class="fn">printf</span>(<span class="str">"Auto mode\n"</span>);
+    <span class="kw">break</span>;
+  <span class="kw">case</span> <span class="num">3</span>:
+    <span class="fn">printf</span>(<span class="str">"Sleep mode\n"</span>);
+    <span class="kw">break</span>;
+  <span class="kw">default</span>:
+    <span class="fn">printf</span>(<span class="str">"Unknown\n"</span>);
+}</div>
+
+          <div style="background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.15); border-radius:8px; padding:10px 12px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; line-height:1.6;">
+            ⚡ In PLCs this maps directly to <span style="color:#3b82f6;">state machine logic</span> — the backbone of industrial automation.
+          </div>
+        </div>
+
+        <div class="author-strip slide-bottom">
+          <div class="av" style="background:#3b82f6; color:#fff;">NJ</div>
+          <div><div class="av-name">Nde Julius</div><div class="av-role">Day 2 · Stage 0</div></div>
+          <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">6 / 7</div>
+        </div>
+      </div>
+
+      <!-- ════ SLIDE 7: OUTRO ════ -->
+      <div class="slide s7">
+        <div class="grid-overlay"></div>
+        <div class="big-num" style="font-size:170px; color:rgba(59,130,246,0.05); bottom:-10px; right:-10px;">58</div>
+
+        <div class="slide-tag" style="color:#10b981;">
+          <div class="dot" style="background:#10b981;"></div>
+          DAY 2 GOAL
+        </div>
+
+        <div class="slide-middle" style="gap:14px;">
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:44px; letter-spacing:2px; color:#fff; line-height:0.95;">58 DAYS<br><span style="color:#10b981;">REMAINING</span></div>
+
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#444; letter-spacing:2px; margin-bottom:2px;">TODAY'S PROGRAMS TO WRITE</div>
+            <div style="display:flex; gap:10px; align-items:center; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:7px; padding:10px 12px;">
+              <span style="color:#10b981; font-size:14px;">→</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">if/else grade checker program</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:7px; padding:10px 12px;">
+              <span style="color:#10b981; font-size:14px;">→</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">for loop: multiplication table</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:7px; padding:10px 12px;">
+              <span style="color:#10b981; font-size:14px;">→</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">while loop: count down timer</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:7px; padding:10px 12px;">
+              <span style="color:#10b981; font-size:14px;">→</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">switch: simple calculator menu</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:7px; padding:10px 12px;">
+              <span style="color:#3b82f6; font-size:14px;">🔥</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">combine all — FizzBuzz in C</span>
+            </div>
+          </div>
+
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#333; text-align:center; letter-spacing:1.5px; line-height:1.9;">
+            #Mechatronics  #CProgramming  #ControlFlow<br>#EmbeddedSystems  #Day2of60
+          </div>
+        </div>
+
+        <div class="author-strip slide-bottom">
+          <div class="av" style="background:linear-gradient(135deg,#3b82f6,#10b981); color:#fff;">NJ</div>
+          <div>
+            <div class="av-name">Nde Julius</div>
+            <div class="av-role">Follow for Day 3 tomorrow 👇</div>
+          </div>
+          <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">7 / 7</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="prog-dots" id="dots">
+    <div class="prog-dot active" onclick="goTo(0)"></div>
+    <div class="prog-dot" onclick="goTo(1)"></div>
+    <div class="prog-dot" onclick="goTo(2)"></div>
+    <div class="prog-dot" onclick="goTo(3)"></div>
+    <div class="prog-dot" onclick="goTo(4)"></div>
+    <div class="prog-dot" onclick="goTo(5)"></div>
+    <div class="prog-dot" onclick="goTo(6)"></div>
+  </div>
+</div>
+
+<div class="nav-row">
+  <button class="nav-btn" id="prevBtn" onclick="prev()" disabled>← Prev</button>
+  <button class="nav-btn next" id="nextBtn" onclick="next()">Next →</button>
+</div>
+
+<div class="hint">Swipe or tap buttons · <span>Screenshot each slide</span></div>
+
+<script>
+  let cur = 0;
+  const total = 7;
+  const inner = document.getElementById('inner');
+  const dots = document.querySelectorAll('.prog-dot');
+  const curLabel = document.getElementById('cur');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function goTo(n) {
+    cur = Math.max(0, Math.min(total - 1, n));
+    inner.style.transform = `translateX(-${cur * 100}%)`;
+    dots.forEach((d, i) => d.classList.toggle('active', i === cur));
+    curLabel.textContent = cur + 1;
+    prevBtn.disabled = cur === 0;
+    nextBtn.disabled = cur === total - 1;
+    nextBtn.textContent = cur === total - 1 ? 'Done ✓' : 'Next →';
+  }
+
+  function next() { goTo(cur + 1); }
+  function prev() { goTo(cur - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') next();
+    if (e.key === 'ArrowLeft') prev();
+  });
+
+  let startX = 0;
+  const track = document.getElementById('track');
+  track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  track.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 40) dx < 0 ? next() : prev();
+  });
+</script>
+</body>
+</html>

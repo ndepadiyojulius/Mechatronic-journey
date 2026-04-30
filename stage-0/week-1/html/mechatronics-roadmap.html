@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mechatronics Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --panel: #10141c;
+    --border: #1e2535;
+    --accent1: #00f5c4;
+    --accent2: #3b82f6;
+    --accent3: #f59e0b;
+    --accent4: #ef4444;
+    --accent5: #a855f7;
+    --text: #e2e8f0;
+    --muted: #64748b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 40px 24px 80px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,245,196,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,196,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 64px;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .header-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent1);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 8vw, 96px);
+    letter-spacing: 4px;
+    line-height: 0.9;
+    background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 20px;
+  }
+
+  .header-sub {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
+
+  .header-sub span {
+    color: var(--accent1);
+    font-weight: 500;
+  }
+
+  /* TIMELINE LINE */
+  .timeline {
+    position: relative;
+    padding-left: 0;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent1), var(--accent2), var(--accent5), var(--accent3));
+    opacity: 0.3;
+    transform: translateX(-50%);
+  }
+
+  /* STAGE CARD */
+  .stage {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    gap: 0;
+    margin-bottom: 32px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .stage:nth-child(1) { animation-delay: 0.1s; }
+  .stage:nth-child(2) { animation-delay: 0.2s; }
+  .stage:nth-child(3) { animation-delay: 0.3s; }
+  .stage:nth-child(4) { animation-delay: 0.4s; }
+  .stage:nth-child(5) { animation-delay: 0.5s; }
+  .stage:nth-child(6) { animation-delay: 0.6s; }
+  .stage:nth-child(7) { animation-delay: 0.7s; }
+  .stage:nth-child(8) { animation-delay: 0.8s; }
+
+  .stage-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    z-index: 2;
+  }
+
+  .stage-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+
+  .stage-line {
+    flex: 1;
+    width: 1px;
+    background: currentColor;
+    opacity: 0.2;
+    min-height: 20px;
+  }
+
+  .stage-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    position: relative;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .stage-card:hover {
+    transform: translateY(-2px);
+    border-color: currentColor;
+  }
+
+  /* Left / Right alternating */
+  .stage-left .stage-card {
+    margin-right: 20px;
+    text-align: right;
+  }
+
+  .stage-right .stage-card {
+    margin-left: 20px;
+  }
+
+  .stage-left {
+    grid-column: 1;
+  }
+  .stage-left .stage-center {
+    grid-column: 2;
+  }
+  .stage-left .stage-empty {
+    grid-column: 3;
+  }
+
+  .stage-right-content {
+    grid-column: 3;
+  }
+  .stage-right-center {
+    grid-column: 2;
+  }
+  .stage-right-empty {
+    grid-column: 1;
+  }
+
+  .stage-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    opacity: 0.6;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .stage-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+
+  .stage-time {
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    opacity: 0.5;
+    margin-bottom: 12px;
+  }
+
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .stage-right .tag-row {
+    justify-content: flex-start;
+  }
+
+  .stage-left .tag-row {
+    justify-content: flex-end;
+  }
+
+  .tag {
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    white-space: nowrap;
+  }
+
+  .tag.skill { border-color: rgba(59,130,246,0.4); color: #93c5fd; background: rgba(59,130,246,0.07); }
+  .tag.build { border-color: rgba(0,245,196,0.4); color: var(--accent1); background: rgba(0,245,196,0.07); }
+  .tag.hw { border-color: rgba(245,158,11,0.4); color: #fcd34d; background: rgba(245,158,11,0.07); }
+
+  .section-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.4;
+    margin-bottom: 4px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .stage-left .section-label { text-align: right; }
+
+  /* STAGE COLORS */
+  .s0 { color: #94a3b8; }
+  .s1 { color: #22d3ee; }
+  .s2 { color: #3b82f6; }
+  .s3 { color: #a78bfa; }
+  .s4 { color: #00f5c4; }
+  .s5 { color: #f59e0b; }
+  .s6 { color: #ef4444; }
+  .s7 { color: #ec4899; }
+
+  /* PORTFOLIO SECTION */
+  .portfolio {
+    margin-top: 48px;
+    padding: 28px 32px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent1);
+    border-radius: 12px;
+    animation: fadeUp 0.6s 0.9s ease both;
+  }
+
+  .portfolio h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--accent1);
+    margin-bottom: 20px;
+  }
+
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .portfolio-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .portfolio-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .portfolio-text {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--text);
+  }
+
+  /* SPECIALIZATION */
+  .spec-section {
+    margin-top: 32px;
+    animation: fadeUp 0.6s 1s ease both;
+  }
+
+  .spec-section h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: #ec4899;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .spec-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .spec-card {
+    padding: 16px 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .spec-card:hover {
+    transform: translateY(-3px);
+    border-color: #ec4899;
+  }
+
+  .spec-card .icon { font-size: 24px; margin-bottom: 8px; display: block; }
+  .spec-card .name { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.3; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    margin-top: 48px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .timeline::before { left: 20px; }
+
+    .stage {
+      display: block;
+      padding-left: 52px;
+      position: relative;
+    }
+
+    .stage-center {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+    }
+
+    .stage-empty, .stage-right-empty { display: none; }
+
+    .stage-left .stage-card,
+    .stage-right .stage-card {
+      margin: 0;
+      text-align: left;
+    }
+
+    .stage-left .tag-row,
+    .stage-right .tag-row { justify-content: flex-start; }
+
+    .stage-left .section-label { text-align: left; }
+
+    .stage-left .stage-card { order: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <span class="header-tag">Physics + Electronics → Expert</span>
+    <h1>MECHATRONICS<br>ROADMAP</h1>
+    <p class="header-sub">7 stages · 18+ months · <span>Physics background → Industry-ready engineer</span></p>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="timeline">
+
+    <!-- STAGE 0 -->
+    <div class="stage" style="grid-template-columns: 1fr 60px 1fr;">
+      <div class="stage-left stage-card s0" style="margin-right:20px; text-align:right;">
+        <div class="stage-num">Stage 0</div>
+        <div class="stage-title" style="color:#94a3b8;">Foundations</div>
+        <div class="stage-time">⏱ 1 month (review)</div>
+        <div class="section-label">You already have</div>
+        <div class="tag-row">
+          <span class="tag skill">Calculus & DiffEq</span>
+          <span class="tag skill">Linear Algebra</span>
+          <span class="tag skill">Circuits & Signals</span>
+          <span class="tag skill">Electromagnetism</span>
+        </div>
+        <div class="section-label" style="margin-top:8px;">Add now</div>
+        <div class="tag-row">
+          <span class="tag build">C & Python basics</span>
+          <span class="tag build">Linux CLI</span>
+          <span class="tag build">Git / GitHub</span>
+        </div>
+      </div>
+      <div class="stage-center s0">
+        <div class="stage-dot" style="color:#94a3b8;">S0</div>
+        <div class="stage-line"></div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- STAGE 1 -->
+    <div class="stage" style="grid-template-columns: 1fr 60px 1fr;">
+      <div></div>
+      <div class="stage-center s1">
+        <div class="stage-line"></div>
+        <div class="stage-dot" style="color:#22d3ee;">S1</div>
+        <div class="stage-line"></div>
+      </div>
+      <div class="stage-card s1" style="margin-left:20px;">
+        <div class="stage-num">Stage 1</div>
+        <div class="stage-title" style="color:#22d3ee;">Embedded Systems Foundation</div>
+        <div class="stage-time">⏱ Months 1–3</div>
+        <div class="section-label">Learn</div>
+        <div class="tag-row">
+          <span class="tag skill">Arduino C/C++</span>
+          <span class="tag skill">GPIO / ADC / PWM</span>
+          <span class="tag skill">UART · I²C · SPI</span>
+          <span class="tag skill">Datasheets</span>
+        </div>
+        <div class="section-label" style="margin-top:8px;">Build</div>
+        <div class="tag-row">
+          <span class="tag build">LED Dimmer</span>
+          <span class="tag build">Temp Logger</span>
+          <span class="tag build">Servo Controller</span>
+          <span class="tag build">Line-Follow Robot</span>
+        </div>
+        <div class="section-label" style="margin-top:8px;">Hardware ~$40</div>
+        <div class="tag-row">
+          <span class="tag hw">Arduino Uno</span>
+          <span class="tag hw">Breadboard + Sensors Kit</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 2 -->
+    <div class="stage" style="grid-template-columns: 1fr 60px 1fr;">
+      <div class="stage-left stage-card s2" style="margin-right:20px; text-align:right;">
+        <div class="stage-num">Stage 2</div>
+        <div class="stage-title" style="color:#3b82f6;">Real Microcontrollers</div>
+        <div class="stage-time">⏱ Months 3–6</div>
+        <div class="section-label">Learn</div>
+        <div class="tag-row">
+          <span class="tag skill">ESP32 (WiFi/BT)</span>
+          <span class="tag skill">STM32 (Industrial)</span>
+          <span class="tag skill">Interrupts & Timers</span>
+          <span class="tag skill">State Machines</span>
+          <span class="tag skill">FreeRTOS basics</span>
+        </div>
+        <div class="section-label" style="margin-top:8px;">Build</div>
+        <div class="tag-row">
+          <span class="tag build">Wireless Sensor Node</span>
+          <span class="tag build">BLDC Motor Driver</span>
+          <span class="tag build">IoT Data Logger</span>
+        </div>
+        <div class="section-label" style="margin-top:8px;">Hardware</div>
+        <div class="tag-row">
+          <span class="tag hw">ESP32 DevKit</span>
+          <span class="tag hw">STM32 Nucleo</span>
+          <span class="tag hw">Logic Analyzer</span>
+        </div>
+      </div>
+      <div class="stage-center s2">
+        <div class="stage-line"></div>
+        <div class="stage-dot" style="color:#3b82f6;">S2</div>
+        <div class="stage-line"></div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- STAGE 3 -->
+    <div class="stage" style="grid-template-columns: 1fr 60px 1fr;">
+      <div></div>
+      <div class="stage-center s3">
+        <div class="stage-line"></div>
+        <div class="stage-dot" style="color:#a78bfa;">S3</div>
+        <div class="stage-line"></div>
+      </div>
+      <div class="stage-card s3" style="margin-left:20px;">
+        <div class="stage-num">Stage 3 · Parallel track</div>
+        <div class="stage-title" style="color:#a78bfa;">Mechanics + CAD</div>
+        <div class="stage-time">⏱ Months 4–7 (run alongside S2)</div>
+        <div class="section-label">Learn</div>
+        <div class="tag-row">
+          <span class="tag skill">Fusion 360 / SolidWorks</span>
+          <span class="tag skill">3D Printing</span>
+          <span class="tag skill">Gears & Linkages</span>
+          <span class="tag skill">Motor Selection</span>
+          <span class="tag skill">Statics & Dynamics</span>
+        </div>
+        <div class="section-label" style="margin-top:8px;">Build</div>
+        <div class="tag-row">
+          <span class="tag build">3D-Printed Gripper</span>
+          <span class="tag build">2-DOF Arm</span>
+          <span class="tag build">Mechanism Prototypes</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 4 -->
+    <div class="stage" style="grid-template-columns: 1fr 60px 1fr;">
+      <div class="stage-left stage-card s4" style="margin-right:20px; text-align:right;">
+        <div class="stage-num">Stage 4 · ⭐ Physics Superpower</div>
+        <div class="stage-title" style="color:#00f5c4;">Control Systems</div>
+        <div class="stage-time">⏱ Months 6–9</div>
+        <div class="section-label">Learn</div>
+        <div class="tag-row">
+          <span class="tag skill">Transfer Functions</span>
+          <span class="tag skill">Bode & Nyquist</span>
+          <span class="tag skill">PID Control (deep)</span>
+          <span class="tag skill">State-Space</span>
+          <span class="tag skill">MATLAB / Simulink</span>
+          <span class="tag skill">Python control libs</span>
+        </div>
+        <div class="section-label" style="margin-top:8px;">Build</div>
+        <div class="tag-row">
+          <span class="tag build">PID Temp Controller</span>
+          <span class="tag build">Self-Balancing Robot</span>
+          <span class="tag build">DC Motor Controller</span>
+        </div>
+      </div>
+      <div class="stage-center s4">
+        <div class="stage-line"></div>
+        <div class="stage-dot" style="color:#00f5c4;">S4</div>
+        <div class="stage-line"></div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- STAGE 5 -->
+    <div class="stage" style="grid-template-columns: 1fr 60px 1fr;">
+      <div></div>
+      <div class="stage-center s5">
+        <div class="stage-line"></div>
+        <div class="stage-dot" style="color:#f59e0b;">S5</div>
+        <div class="stage-line"></div>
+      </div>
+      <div class="stage-card s5" style="margin-left:20px;">
+        <div class="stage-num">Stage 5</div>
+        <div class="stage-title" style="color:#f59e0b;">PLC & Industrial Automation</div>
+        <div class="stage-time">⏱ Months 9–12</div>
+        <div class="section-label">Learn</div>
+        <div class="tag-row">
+          <span class="tag skill">Ladder Logic</span>
+          <span class="tag skill">Function Block Diagram</span>
+          <span class="tag skill">Structured Text</span>
+          <span class="tag skill">TIA Portal / Studio 5000</span>
+          <span class="tag skill">HMI / SCADA</span>
+          <span class="tag skill">Pneumatics basics</span>
+          <span class="tag skill">ISO 13849 Safety</span>
+        </div>
+        <div class="section-label" style="margin-top:8px;">Build</div>
+        <div class="tag-row">
+          <span class="tag build">Traffic Light System</span>
+          <span class="tag build">Conveyor Sorter</span>
+          <span class="tag build">Bottle-Fill Simulation</span>
+        </div>
+        <div class="section-label" style="margin-top:8px;">Tools (free simulators)</div>
+        <div class="tag-row">
+          <span class="tag hw">Factory I/O</span>
+          <span class="tag hw">OpenPLC</span>
+          <span class="tag hw">Siemens S7-1200</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 6 -->
+    <div class="stage" style="grid-template-columns: 1fr 60px 1fr;">
+      <div class="stage-left stage-card s6" style="margin-right:20px; text-align:right;">
+        <div class="stage-num">Stage 6</div>
+        <div class="stage-title" style="color:#ef4444;">Robotics & Systems Integration</div>
+        <div class="stage-time">⏱ Months 12–18</div>
+        <div class="section-label">Learn</div>
+        <div class="tag-row">
+          <span class="tag skill">Fwd / Inv Kinematics</span>
+          <span class="tag skill">Trajectory Planning</span>
+          <span class="tag skill">ROS 2</span>
+          <span class="tag skill">Kalman Filters</span>
+          <span class="tag skill">OpenCV Vision</span>
+          <span class="tag skill">KiCad PCB Design</span>
+        </div>
+        <div class="section-label" style="margin-top:8px;">Build</div>
+        <div class="tag-row">
+          <span class="tag build">6-DOF Arm + Vision</span>
+          <span class="tag build">Autonomous Mobile Robot</span>
+          <span class="tag build">Custom PCB Controller</span>
+        </div>
+      </div>
+      <div class="stage-center s6">
+        <div class="stage-line"></div>
+        <div class="stage-dot" style="color:#ef4444;">S6</div>
+        <div class="stage-line"></div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- STAGE 7 -->
+    <div class="stage" style="grid-template-columns: 1fr 60px 1fr;">
+      <div></div>
+      <div class="stage-center s7">
+        <div class="stage-line"></div>
+        <div class="stage-dot" style="color:#ec4899;">S7</div>
+      </div>
+      <div class="stage-card s7" style="margin-left:20px;">
+        <div class="stage-num">Stage 7</div>
+        <div class="stage-title" style="color:#ec4899;">Specialization</div>
+        <div class="stage-time">⏱ Months 18+</div>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">Choose your expert lane:</p>
+        <div class="spec-grid" style="grid-template-columns: repeat(2, 1fr);">
+          <div style="padding:10px 12px; background:rgba(236,72,153,0.08); border:1px solid rgba(236,72,153,0.2); border-radius:8px;">
+            <div style="font-size:18px; margin-bottom:4px;">🤖</div>
+            <div style="font-size:12px; font-weight:600;">Robotics & Autonomous Systems</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:2px;">ROS · SLAM · AI</div>
+          </div>
+          <div style="padding:10px 12px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2); border-radius:8px;">
+            <div style="font-size:18px; margin-bottom:4px;">🏭</div>
+            <div style="font-size:12px; font-weight:600;">Industrial Automation</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:2px;">PLC · SCADA · Industry 4.0</div>
+          </div>
+          <div style="padding:10px 12px; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); border-radius:8px;">
+            <div style="font-size:18px; margin-bottom:4px;">🚗</div>
+            <div style="font-size:12px; font-weight:600;">Automotive Mechatronics</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:2px;">CAN · ECUs · AUTOSAR</div>
+          </div>
+          <div style="padding:10px 12px; background:rgba(167,139,250,0.08); border:1px solid rgba(167,139,250,0.2); border-radius:8px;">
+            <div style="font-size:18px; margin-bottom:4px;">✈️</div>
+            <div style="font-size:12px; font-weight:600;">Aerospace / Drones</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:2px;">Flight control · RTOS</div>
+          </div>
+          <div style="padding:10px 12px; background:rgba(0,245,196,0.08); border:1px solid rgba(0,245,196,0.2); border-radius:8px;">
+            <div style="font-size:18px; margin-bottom:4px;">🔬</div>
+            <div style="font-size:12px; font-weight:600;">Precision Instruments</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:2px;">Physics background shines</div>
+          </div>
+          <div style="padding:10px 12px; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:8px;">
+            <div style="font-size:18px; margin-bottom:4px;">🏥</div>
+            <div style="font-size:12px; font-weight:600;">Medical Devices</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:2px;">High-precision · Regulated</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /timeline -->
+
+  <!-- PORTFOLIO -->
+  <div class="portfolio">
+    <h2>🎯 Portfolio Goals</h2>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:20px;">A mechatronics expert is recognized by projects, not just degrees.</p>
+    <div class="portfolio-grid">
+      <div class="portfolio-item">
+        <span class="portfolio-icon">⚖️</span>
+        <span class="portfolio-text">Self-Balancing Robot</span>
+      </div>
+      <div class="portfolio-item">
+        <span class="portfolio-icon">🎛️</span>
+        <span class="portfolio-text">PID-Controlled Real System</span>
+      </div>
+      <div class="portfolio-item">
+        <span class="portfolio-icon">🏭</span>
+        <span class="portfolio-text">PLC-Automated Process</span>
+      </div>
+      <div class="portfolio-item">
+        <span class="portfolio-icon">👁️</span>
+        <span class="portfolio-text">Robotic Arm with Vision</span>
+      </div>
+      <div class="portfolio-item">
+        <span class="portfolio-icon">🔌</span>
+        <span class="portfolio-text">Custom PCB Project</span>
+      </div>
+      <div class="portfolio-item">
+        <span class="portfolio-icon">📡</span>
+        <span class="portfolio-text">IoT / Embedded Product</span>
+      </div>
+      <div class="portfolio-item">
+        <span class="portfolio-icon">🚗</span>
+        <span class="portfolio-text">Autonomous Mobile Robot</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    MECHATRONICS · EMBEDDED · PLC · ROBOTICS · CONTROL SYSTEMS
+  </div>
+
+</div>
+
+</body>
+</html>

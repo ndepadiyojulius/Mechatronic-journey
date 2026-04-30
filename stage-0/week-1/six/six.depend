@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1777411446 source:e:\electronics and plcs and programx\c pro\six\main.c
+	<stdio.h>
+	<stdlib.h>
+

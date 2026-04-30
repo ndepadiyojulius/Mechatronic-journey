@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 4 Done — Nde Julius</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #050608;
+    font-family: 'Barlow Condensed', sans-serif;
+    padding: 24px 16px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .page-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: #333;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .page-label span { color: #06b6d4; }
+
+  .card {
+    width: 100%;
+    max-width: 360px;
+    aspect-ratio: 9 / 16;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 28px 24px;
+    flex-shrink: 0;
+  }
+
+  .card-num {
+    position: absolute;
+    top: 16px; right: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 1px;
+    z-index: 2;
+  }
+
+  /* BACKGROUNDS */
+  .c1 { background: #060b10; }
+  .c1::before {
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 80% 50% at 85% 8%, rgba(6,182,212,0.24) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 10% 90%, rgba(14,165,233,0.12) 0%, transparent 50%);
+    pointer-events:none;
+  }
+
+  .c2 { background: #07090c; }
+  .c2::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 65% 55% at 50% 10%, rgba(6,182,212,0.15) 0%, transparent 60%);
+    pointer-events:none;
+  }
+
+  .c3 { background: #080c0a; }
+  .c3::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at top right, rgba(16,185,129,0.15) 0%, transparent 55%);
+    pointer-events:none;
+  }
+
+  .c4 { background: #0a0b08; }
+  .c4::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at bottom left, rgba(245,158,11,0.13) 0%, transparent 55%);
+    pointer-events:none;
+  }
+
+  .c5 { background: #09080d; }
+  .c5::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at center, rgba(168,85,247,0.13) 0%, transparent 55%);
+    pointer-events:none;
+  }
+
+  .c6 { background: #07090c; }
+  .c6::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at bottom, rgba(6,182,212,0.12) 0%, transparent 55%);
+    pointer-events:none;
+  }
+
+  .c7 { background: #060a0c; }
+  .c7::before {
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 30%, rgba(6,182,212,0.14) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 80% 75%, rgba(16,185,129,0.1) 0%, transparent 50%);
+    pointer-events:none;
+  }
+
+  .grid {
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events:none; z-index:0;
+  }
+
+  .big-num {
+    font-family:'Bebas Neue',sans-serif;
+    letter-spacing:-4px; line-height:1;
+    position:absolute; pointer-events:none; z-index:0;
+  }
+
+  .top { z-index:1; }
+  .mid { z-index:1; flex:1; display:flex; flex-direction:column; justify-content:center; gap:12px; }
+  .bot { z-index:1; }
+
+  .tag {
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px; letter-spacing:3px; text-transform:uppercase;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .dot { width:6px; height:6px; border-radius:50%; }
+
+  .code-block {
+    background:rgba(0,0,0,0.6);
+    border:1px solid rgba(255,255,255,0.07);
+    border-radius:10px;
+    padding:13px 15px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px; line-height:1.8; z-index:1;
+  }
+  .kw{color:#ff7b72;} .fn{color:#d2a8ff;} .str{color:#79c0ff;}
+  .num{color:#f97316;} .cmt{color:#4a5568;font-style:italic;}
+  .ty{color:#06b6d4;} .op{color:#f5c842;}
+
+  .author { display:flex; align-items:center; gap:10px; }
+  .av { width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:12px;flex-shrink:0; }
+  .av-name { font-size:12px;font-weight:700;color:#fff; }
+  .av-role { font-size:10px;color:#555;font-weight:300; }
+
+  .info-row {
+    display:flex; align-items:center; gap:10px;
+    background:rgba(255,255,255,0.025);
+    border:1px solid rgba(255,255,255,0.05);
+    border-radius:7px; padding:9px 12px;
+  }
+
+  .pill {
+    display:inline-block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px; padding:4px 9px;
+    border-radius:4px; margin:3px 2px; border:1px solid;
+  }
+
+  /* CAPTION */
+  .caption-box {
+    width:100%; max-width:360px;
+    background:#0e1018;
+    border:1px solid #1c1f2b;
+    border-radius:14px; overflow:hidden;
+  }
+
+  .cap-head {
+    display:flex; align-items:center; gap:10px;
+    padding:12px 16px; border-bottom:1px solid #1c1f2b;
+  }
+
+  .cap-title { font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:2px; }
+
+  .copy-btn {
+    margin-left:auto; background:#1c1f2b; border:none; color:#fff;
+    font-family:'JetBrains Mono',monospace; font-size:9px;
+    padding:5px 10px; border-radius:4px; cursor:pointer;
+    letter-spacing:1px; text-transform:uppercase; transition:all 0.2s;
+  }
+  .copy-btn:hover { background:#06b6d4; color:#000; }
+
+  .cap-body {
+    padding:16px; font-size:13.5px; line-height:1.8;
+    color:#bbb; white-space:pre-line;
+  }
+  .cap-body strong { color:#06b6d4; }
+
+  .cap-tags {
+    padding:8px 16px 14px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px; color:#06b6d4; opacity:0.6; line-height:1.9;
+  }
+
+  .divider {
+    width:100%; max-width:360px;
+    display:flex; align-items:center; gap:12px;
+    color:#222; font-family:'JetBrains Mono',monospace;
+    font-size:9px; letter-spacing:2px; text-transform:uppercase;
+  }
+  .divider::before,.divider::after { content:''; flex:1; height:1px; background:#1a1a22; }
+</style>
+</head>
+<body>
+
+<div class="page-label">Nde Julius · <span>Day 4 Done ✓</span> · Story Cards</div>
+<div class="page-label" style="color:#555; margin-bottom:4px;">Scroll · Screenshot each card · Post</div>
+
+<!-- ══ CARD 1: COVER ══ -->
+<div class="card c1">
+  <div class="grid"></div>
+  <div class="big-num" style="font-size:260px; color:rgba(6,182,212,0.05); bottom:-40px; right:-25px;">4</div>
+
+  <div class="top">
+    <div class="tag" style="color:#06b6d4;">
+      <div class="dot" style="background:#06b6d4;"></div>
+      STAGE 0 · WEEK 1 · THU · DONE
+    </div>
+  </div>
+  <div class="card-num">1 / 7</div>
+
+  <div class="mid" style="gap:10px;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#444; letter-spacing:2px;">MECHATRONICS JOURNEY</div>
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:80px; line-height:0.85; letter-spacing:2px; color:#fff;">DAY<br><span style="color:#06b6d4;">FOUR</span><br><span style="font-size:36px; color:#10b981; letter-spacing:4px;">DONE. ✓</span></div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; margin-top:6px; line-height:1.7;">4 programs · Arrays · User input<br>For loop + array · Marks average calculator</div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(6,182,212,0.3); background:rgba(6,182,212,0.07); color:#06b6d4;">4 programs</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(16,185,129,0.3); background:rgba(16,185,129,0.07); color:#10b981;">arrays[]</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(245,158,11,0.3); background:rgba(245,158,11,0.07); color:#f59e0b;">56 days left</span>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#06b6d4; color:#000;">NJ</div>
+      <div>
+        <div class="av-name">Nde Julius</div>
+        <div class="av-role">Physics → Mechatronics · Day 4 of 60</div>
+      </div>
+      <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">SCROLL ↓</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 2: ALL PROGRAMS ══ -->
+<div class="card c2">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#06b6d4;">
+      <div class="dot" style="background:#06b6d4;"></div>
+      4 PROGRAMS TODAY
+    </div>
+  </div>
+  <div class="card-num">2 / 7</div>
+
+  <div class="mid" style="gap:10px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:40px; letter-spacing:2px; color:#fff; line-height:1;">WHAT I<br><span style="color:#06b6d4;">BUILT</span></div>
+
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div class="info-row">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:22px; color:rgba(6,182,212,0.4); width:20px;">1</div>
+        <div>
+          <div style="font-size:13px; font-weight:700; color:#ccc;">Declare & print array</div>
+          <div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">int age[]={22,52,65,45,41} · index access</div>
+        </div>
+        <span style="margin-left:auto; color:#06b6d4;">✓</span>
+      </div>
+      <div class="info-row">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:22px; color:rgba(6,182,212,0.4); width:20px;">2</div>
+        <div>
+          <div style="font-size:13px; font-weight:700; color:#ccc;">User input into array</div>
+          <div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">int age[5] · scanf into &age[0]…[4]</div>
+        </div>
+        <span style="margin-left:auto; color:#06b6d4;">✓</span>
+      </div>
+      <div class="info-row" style="border-color:rgba(6,182,212,0.2); background:rgba(6,182,212,0.05);">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:22px; color:rgba(6,182,212,0.5); width:20px;">3</div>
+        <div>
+          <div style="font-size:13px; font-weight:700; color:#67e8f9;">for loop fills array</div>
+          <div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">scanf(&age[i]) in loop — cleaner!</div>
+        </div>
+        <span style="margin-left:auto; color:#06b6d4;">🔥</span>
+      </div>
+      <div class="info-row" style="border-color:rgba(16,185,129,0.2); background:rgba(16,185,129,0.05);">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:22px; color:rgba(16,185,129,0.5); width:20px;">4</div>
+        <div>
+          <div style="font-size:13px; font-weight:700; color:#6ee7b7;">Marks average calculator</div>
+          <div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">sum + average=sum/5.0 · %.2f output</div>
+        </div>
+        <span style="margin-left:auto; color:#10b981;">🔥</span>
+      </div>
+    </div>
+
+    <div style="background:rgba(6,182,212,0.06); border:1px solid rgba(6,182,212,0.18); border-radius:8px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; line-height:1.6;">
+      ⚡ Stopped early today. <span style="color:#06b6d4;">Rest is part of the process.</span> 4 solid programs beats 0 burned-out ones.
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#06b6d4; color:#000;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 4 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 3: ARRAY BASICS ══ -->
+<div class="card c3">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#10b981;">
+      <div class="dot" style="background:#10b981;"></div>
+      PROGRAM 1 · ARRAYS BASICS
+    </div>
+  </div>
+  <div class="card-num">3 / 7</div>
+
+  <div class="mid" style="gap:12px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:2px; color:#fff; line-height:1.05;">LISTS OF<br><span style="color:#10b981;">DATA IN C</span></div>
+
+    <div class="code-block">
+<span class="cmt">// Declare with values</span>
+<span class="ty">int</span> age[] <span class="op">=</span> {<span class="num">22</span>,<span class="num">52</span>,<span class="num">65</span>,<span class="num">45</span>,<span class="num">41</span>};
+
+<span class="cmt">// Access by index</span>
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, age[<span class="num">0</span>]); <span class="cmt">// 22</span>
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, age[<span class="num">1</span>]); <span class="cmt">// 52</span>
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, age[<span class="num">2</span>]); <span class="cmt">// 65</span>
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, age[<span class="num">3</span>]); <span class="cmt">// 45</span>
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, age[<span class="num">4</span>]); <span class="cmt">// 41</span></div>
+
+    <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:5px; text-align:center;">
+      <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:6px; padding:8px 4px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#10b981; font-weight:700;">22</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#555;">[0]</div>
+      </div>
+      <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:6px; padding:8px 4px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#10b981; font-weight:700;">52</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#555;">[1]</div>
+      </div>
+      <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:6px; padding:8px 4px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#10b981; font-weight:700;">65</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#555;">[2]</div>
+      </div>
+      <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:6px; padding:8px 4px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#10b981; font-weight:700;">45</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#555;">[3]</div>
+      </div>
+      <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:6px; padding:8px 4px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#10b981; font-weight:700;">41</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#555;">[4]</div>
+      </div>
+    </div>
+
+    <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.18); border-radius:8px; padding:11px 13px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; line-height:1.6;">
+      ⚡ A sensor buffer in embedded is exactly this — an array of readings sampled over time. ADC data, encoder counts, temperature logs.
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#10b981; color:#000;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 4 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 4: USER INPUT + LOOP ══ -->
+<div class="card c4">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#f59e0b;">
+      <div class="dot" style="background:#f59e0b;"></div>
+      PROGRAMS 2 & 3 · INPUT + LOOP
+    </div>
+  </div>
+  <div class="card-num">4 / 7</div>
+
+  <div class="mid" style="gap:12px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:2px; color:#fff; line-height:1.05;">FILLING ARRAYS<br><span style="color:#f59e0b;">FROM USER</span></div>
+
+    <div class="code-block" style="font-size:11px;">
+<span class="cmt">// Manual — verbose but clear</span>
+<span class="ty">int</span> age[<span class="num">5</span>];
+<span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&amp;</span>age[<span class="num">0</span>]);
+<span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&amp;</span>age[<span class="num">1</span>]); <span class="cmt">// ...up to [4]</span>
+
+<span class="cmt">// Cleaner — loop version</span>
+<span class="kw">for</span>(<span class="ty">int</span> i<span class="op">=</span><span class="num">0</span>; i<span class="op">&lt;</span><span class="num">5</span>; i<span class="op">++</span>) {
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&amp;</span>age[i]);
+}
+<span class="kw">for</span>(<span class="ty">int</span> i<span class="op">=</span><span class="num">0</span>; i<span class="op">&lt;</span><span class="num">5</span>; i<span class="op">++</span>) {
+    <span class="fn">printf</span>(<span class="str">"%d\n"</span>, age[i]);
+}</div>
+
+    <div style="background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.2); border-radius:8px; padding:12px 14px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#f59e0b; letter-spacing:2px; margin-bottom:5px;">KEY INSIGHT</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; line-height:1.6;">You wrote the same program two ways — manual then loop. That's exactly how engineers think: <span style="color:#f59e0b;">make it work, then make it clean.</span></div>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#f59e0b; color:#000;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 4 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 5: MARKS CALCULATOR ══ -->
+<div class="card c5">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#a855f7;">
+      <div class="dot" style="background:#a855f7;"></div>
+      PROGRAM 4 · MARKS CALCULATOR 🔥
+    </div>
+  </div>
+  <div class="card-num">5 / 7</div>
+
+  <div class="mid" style="gap:12px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:2px; color:#fff; line-height:1.05;">REAL-WORLD<br><span style="color:#a855f7;">CALCULATION</span></div>
+
+    <div class="code-block" style="font-size:11px;">
+<span class="ty">int</span>   marks[<span class="num">5</span>], sum<span class="op">=</span><span class="num">0</span>;
+<span class="ty">float</span> average;
+
+<span class="kw">for</span>(<span class="ty">int</span> i<span class="op">=</span><span class="num">0</span>; i<span class="op">&lt;</span><span class="num">5</span>; i<span class="op">++</span>) {
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&amp;</span>marks[i]);
+    sum <span class="op">=</span> sum <span class="op">+</span> marks[i];
+}
+
+average <span class="op">=</span> sum <span class="op">/</span> <span class="num">5.0</span>;
+
+<span class="fn">printf</span>(<span class="str">"sum=%d\n"</span>, sum);
+<span class="fn">printf</span>(<span class="str">"avg=%.2f\n"</span>, average);</div>
+
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <div style="display:flex; gap:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">
+        <span style="color:#a855f7;">→</span> sum/5.0 not sum/5 — avoids integer division
+      </div>
+      <div style="display:flex; gap:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">
+        <span style="color:#a855f7;">→</span> %.2f prints 2 decimal places cleanly
+      </div>
+      <div style="display:flex; gap:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#888;">
+        <span style="color:#a855f7;">→</span> accumulator pattern: sum inside the loop
+      </div>
+    </div>
+
+    <div style="background:rgba(168,85,247,0.07); border:1px solid rgba(168,85,247,0.2); border-radius:8px; padding:11px 13px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; line-height:1.6;">
+      ⚡ This exact pattern — collect N readings, sum, divide — is how microcontrollers average sensor noise in real firmware.
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#a855f7; color:#fff;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 4 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 6: CONCEPTS ══ -->
+<div class="card c6">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#06b6d4;">
+      <div class="dot" style="background:#06b6d4;"></div>
+      CONCEPTS UNLOCKED TODAY
+    </div>
+  </div>
+  <div class="card-num">6 / 7</div>
+
+  <div class="mid" style="gap:14px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1.05;">WHAT YOUR<br><span style="color:#06b6d4;">BRAIN LEARNED</span></div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:7px;">
+      <span class="pill" style="color:#06b6d4; border-color:rgba(6,182,212,0.25); background:rgba(6,182,212,0.07);">int arr[]</span>
+      <span class="pill" style="color:#06b6d4; border-color:rgba(6,182,212,0.25); background:rgba(6,182,212,0.07);">arr[index]</span>
+      <span class="pill" style="color:#06b6d4; border-color:rgba(6,182,212,0.25); background:rgba(6,182,212,0.07);">index starts at 0</span>
+      <span class="pill" style="color:#06b6d4; border-color:rgba(6,182,212,0.25); background:rgba(6,182,212,0.07);">int arr[5]</span>
+      <span class="pill" style="color:#06b6d4; border-color:rgba(6,182,212,0.25); background:rgba(6,182,212,0.07);">&arr[i]</span>
+      <span class="pill" style="color:#06b6d4; border-color:rgba(6,182,212,0.25); background:rgba(6,182,212,0.07);">loop fill</span>
+      <span class="pill" style="color:#06b6d4; border-color:rgba(6,182,212,0.25); background:rgba(6,182,212,0.07);">accumulator</span>
+      <span class="pill" style="color:#06b6d4; border-color:rgba(6,182,212,0.25); background:rgba(6,182,212,0.07);">sum/5.0</span>
+      <span class="pill" style="color:#06b6d4; border-color:rgba(6,182,212,0.25); background:rgba(6,182,212,0.07);">%.2f average</span>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; text-align:center;">
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:26px; color:#06b6d4;">4</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#444; text-transform:uppercase;">Programs</div>
+      </div>
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:26px; color:#10b981;">9</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#444; text-transform:uppercase;">Concepts</div>
+      </div>
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:26px; color:#f59e0b;">4</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#444; text-transform:uppercase;">Days Done</div>
+      </div>
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:26px; color:#ef4444;">56</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#444; text-transform:uppercase;">Days Left</div>
+      </div>
+    </div>
+
+    <div style="background:rgba(6,182,212,0.06); border:1px solid rgba(6,182,212,0.18); border-radius:8px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; line-height:1.7; text-align:center;">
+      4 days in · consistency beats intensity<br><span style="color:#06b6d4;">Every day counts. Even the short ones.</span>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#06b6d4; color:#000;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 4 · Stage 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 7: OUTRO ══ -->
+<div class="card c7">
+  <div class="grid"></div>
+  <div class="big-num" style="font-size:210px; color:rgba(6,182,212,0.05); bottom:-30px; right:-20px;">56</div>
+
+  <div class="top">
+    <div class="tag" style="color:#10b981;">
+      <div class="dot" style="background:#10b981;"></div>
+      REST · RECOVER · RETURN
+    </div>
+  </div>
+  <div class="card-num">7 / 7</div>
+
+  <div class="mid" style="gap:14px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:46px; letter-spacing:2px; color:#fff; line-height:0.95;">56 DAYS<br><span style="color:#10b981;">REMAINING</span></div>
+
+    <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.2); border-radius:10px; padding:16px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#10b981; letter-spacing:2px; margin-bottom:8px;">TOMORROW · DAY 5</div>
+      <div style="font-size:14px; font-weight:600; color:#fff; margin-bottom:4px;">Week 1 Review + Mini Challenge</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; line-height:1.7;">Consolidate Days 1–4 · Build a calculator in C using functions + arrays + loops</div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#444; letter-spacing:2px; margin-bottom:2px;">WEEK 1 PROGRESS</div>
+      <div style="display:flex; gap:5px;">
+        <div style="flex:1; height:6px; background:#06b6d4; border-radius:3px;"></div>
+        <div style="flex:1; height:6px; background:#06b6d4; border-radius:3px;"></div>
+        <div style="flex:1; height:6px; background:#06b6d4; border-radius:3px;"></div>
+        <div style="flex:1; height:6px; background:#06b6d4; border-radius:3px;"></div>
+        <div style="flex:1; height:6px; background:#1a1f2e; border-radius:3px;"></div>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">
+        <span style="color:#06b6d4;">Day 1–4 Done</span>
+        <span>Day 5 Tomorrow</span>
+      </div>
+    </div>
+
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#333; text-align:center; letter-spacing:1px; line-height:2;">
+      #Mechatronics #CProgramming #Arrays<br>#EmbeddedSystems #Day4Done #LearnInPublic
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:linear-gradient(135deg,#06b6d4,#10b981); color:#000;">NJ</div>
+      <div>
+        <div class="av-name">Nde Julius</div>
+        <div class="av-role">Back stronger tomorrow 💪</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DIVIDER -->
+<div class="divider">Captions</div>
+
+<!-- TIKTOK -->
+<div class="caption-box">
+  <div class="cap-head">
+    <span style="font-size:16px;">🎵</span>
+    <span class="cap-title">TikTok</span>
+    <button class="copy-btn" onclick="copyText('tt')">Copy</button>
+  </div>
+  <div class="cap-body" id="tt"><strong>Day 4. Tired. Stopped early. Still posted. 💪</strong>
+
+Honestly? Today was a short session. Life happens. But I still wrote 4 programs and learned arrays in C.
+
+✅ Declared an array — int age[]={22,52,65,45,41}
+✅ User input into each array slot with scanf
+✅ Used a for loop to fill the array — cleaner version
+✅ Built a marks average calculator — real-world math
+
+The last program summed 5 subject marks and calculated the average using sum/5.0. That exact pattern — collect data, sum, average — is how microcontrollers filter noisy sensor readings in real firmware.
+
+Tired days still count. 56 left. 🔥</div>
+  <div class="cap-tags">#CProgramming #Arrays #Mechatronics #EmbeddedSystems #Day4 #LearnToCode #Consistency #STEMJourney #LearnInPublic #Day4Done</div>
+</div>
+
+<!-- LINKEDIN -->
+<div class="caption-box">
+  <div class="cap-head">
+    <span style="font-size:16px;">💼</span>
+    <span class="cap-title">LinkedIn</span>
+    <button class="copy-btn" onclick="copyText('li')">Copy</button>
+  </div>
+  <div class="cap-body" id="li"><strong>Day 4 — Arrays in C. Short session. Still showed up. ✅</strong>
+
+Honest update: I was tired today and stopped earlier than planned. But I still completed 4 programs and logged the session. Consistency matters more than perfection.
+
+What I built:
+→ Array declaration with initial values — int age[]={22,52,65,45,41}
+→ Manual user input into array indices with scanf
+→ For loop filling array — same logic, half the code
+→ Marks average calculator — input 5 marks, compute sum and average
+
+The standout today was the marks calculator. The pattern: declare array, loop to fill it, accumulate sum, divide by 5.0 for float average. This is not just academic — it's exactly how embedded firmware averages sensor readings to reduce noise.
+
+One technical note: dividing by 5.0 instead of 5 prevents integer division truncation. A small detail that crashes real systems when missed.
+
+4 days logged. 56 remaining. Rest is part of the process.</div>
+  <div class="cap-tags">#Mechatronics #CProgramming #Arrays #EmbeddedSystems #LearnInPublic #EngineeringCommunity #Consistency #Day4 #Robotics #GrowthMindset</div>
+</div>
+
+<script>
+  function copyText(id) {
+    const el = document.getElementById(id);
+    const panel = el.closest('.caption-box');
+    const btn = panel.querySelector('.copy-btn');
+    navigator.clipboard.writeText(el.innerText).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Done';
+      btn.style.background = '#10b981';
+      btn.style.color = '#000';
+      setTimeout(() => { btn.textContent = orig; btn.style.background=''; btn.style.color=''; }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
