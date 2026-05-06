@@ -1,0 +1,109 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Constants
+#define MAX_SENSORS 3
+#define THRESHOLD   50.0
+
+// Enum for sensor status
+typedef enum {
+    ACTIVE,
+    INACTIVE,
+    ERROR
+} SensorStatus;
+
+// Struct for sensor
+typedef struct {
+    char          name[20];
+    float         value;
+    int           pin;
+    SensorStatus  status;
+} Sensor;
+
+// GPIO register — one bit per pin
+unsigned char gpio = 0;
+
+// Functions
+void activateSensor(Sensor *s) {
+    s->status = ACTIVE;
+    gpio |= (1 << s->pin);   // set pin ON
+}
+
+void deactivateSensor(Sensor *s) {
+    s->status = INACTIVE;
+    gpio &= ~(1 << s->pin);  // set pin OFF
+}
+
+void displaySensor(Sensor s) {
+    printf("\n--- %s ---\n", s.name);
+    printf("Value : %.2f\n", s.value);
+    printf("Pin   : %d\n", s.pin);
+    printf("Status: %s\n",
+        s.status == ACTIVE   ? "ACTIVE" :
+        s.status == INACTIVE ? "INACTIVE" : "ERROR");
+    printf("Alert : %s\n",
+        s.value > THRESHOLD ? "⚠ ABOVE THRESHOLD" : "OK");
+}
+
+void logToFile(Sensor sensors[], int count) {
+    FILE *f = fopen("sensors.txt", "w");
+    if (f != NULL) {
+        for (int i = 0; i < count; i++) {
+            fprintf(f, "Sensor: %s | Value: %.2f | Pin: %d\n",
+                sensors[i].name,
+                sensors[i].value,
+                sensors[i].pin);
+        }
+        fclose(f);
+        printf("\nData saved to sensors.txt\n");
+    }
+}
+
+int main() {
+    // Dynamic allocation
+    Sensor *sensors = (Sensor*)malloc(MAX_SENSORS * sizeof(Sensor));
+
+    // Sensor 1
+    strcpy(sensors[0].name, "Temperature");
+    sensors[0].value  = 72.5;
+    sensors[0].pin    = 0;
+    sensors[0].status = INACTIVE;
+
+    // Sensor 2
+    strcpy(sensors[1].name, "Pressure");
+    sensors[1].value  = 35.0;
+    sensors[1].pin    = 2;
+    sensors[1].status = INACTIVE;
+
+    // Sensor 3
+    strcpy(sensors[2].name, "Humidity");
+    sensors[2].value  = 88.3;
+    sensors[2].pin    = 5;
+    sensors[2].status = INACTIVE;
+
+    // Activate all sensors
+    for (int i = 0; i < MAX_SENSORS; i++) {
+        activateSensor(&sensors[i]);
+    }
+
+    // Display all
+    printf("=== SENSOR DASHBOARD ===\n");
+    for (int i = 0; i < MAX_SENSORS; i++) {
+        displaySensor(sensors[i]);
+    }
+
+    // GPIO state
+    printf("\nGPIO Register: %d\n", gpio);
+    for (int i = 0; i < 8; i++) {
+        printf("Pin %d: %s\n", i,
+            (gpio & (1 << i)) ? "ON" : "OFF");
+    }
+
+    // Log to file
+    logToFile(sensors, MAX_SENSORS);
+
+    // Free memory
+    free(sensors);
+    return 0;
+}

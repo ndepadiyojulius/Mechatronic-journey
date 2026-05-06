@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 6 Done — Nde Julius</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #050608;
+    font-family: 'Barlow Condensed', sans-serif;
+    padding: 24px 16px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .page-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px;
+    color: #333; text-transform: uppercase; text-align: center;
+  }
+  .page-label span { color: #ef4444; }
+
+  .card {
+    width: 100%; max-width: 360px;
+    aspect-ratio: 9 / 16;
+    border-radius: 20px; overflow: hidden;
+    position: relative;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    padding: 28px 24px; flex-shrink: 0;
+  }
+
+  .card-num {
+    position: absolute; top: 16px; right: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: rgba(255,255,255,0.15);
+    letter-spacing: 1px; z-index: 2;
+  }
+
+  .c1 { background: #090608; }
+  .c1::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 80% 50% at 85% 8%, rgba(239,68,68,0.24) 0%, transparent 55%), radial-gradient(ellipse 40% 40% at 10% 90%, rgba(168,85,247,0.12) 0%, transparent 50%); pointer-events:none; }
+
+  .c2 { background: #070a08; }
+  .c2::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 65% 55% at 50% 10%, rgba(16,185,129,0.15) 0%, transparent 60%); pointer-events:none; }
+
+  .c3 { background: #080810; }
+  .c3::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse at top right, rgba(59,130,246,0.15) 0%, transparent 55%); pointer-events:none; }
+
+  .c4 { background: #090808; }
+  .c4::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse at bottom left, rgba(239,68,68,0.15) 0%, transparent 55%); pointer-events:none; }
+
+  .c5 { background: #080910; }
+  .c5::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse at center, rgba(99,102,241,0.14) 0%, transparent 55%); pointer-events:none; }
+
+  .c6 { background: #070a08; }
+  .c6::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse at top, rgba(16,185,129,0.14) 0%, transparent 55%); pointer-events:none; }
+
+  .c7 { background: #090808; }
+  .c7::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse at bottom right, rgba(245,158,11,0.12) 0%, transparent 55%); pointer-events:none; }
+
+  .c8 { background: #07090c; }
+  .c8::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 60% 50% at 20% 30%, rgba(239,68,68,0.14) 0%, transparent 55%), radial-gradient(ellipse 40% 40% at 80% 75%, rgba(16,185,129,0.1) 0%, transparent 50%); pointer-events:none; }
+
+  .grid { position:absolute; inset:0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 32px 32px; pointer-events:none; z-index:0; }
+
+  .big-num { font-family:'Bebas Neue',sans-serif; letter-spacing:-4px; line-height:1; position:absolute; pointer-events:none; z-index:0; }
+
+  .top { z-index:1; }
+  .mid { z-index:1; flex:1; display:flex; flex-direction:column; justify-content:center; gap:11px; }
+  .bot { z-index:1; }
+
+  .tag { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:3px; text-transform:uppercase; display:inline-flex; align-items:center; gap:6px; }
+  .dot { width:6px; height:6px; border-radius:50%; }
+
+  .code-block { background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.8; z-index:1; }
+  .kw{color:#ff7b72;} .fn{color:#d2a8ff;} .str{color:#79c0ff;} .num{color:#f97316;} .cmt{color:#4a5568;font-style:italic;} .ty{color:#ef4444;} .op{color:#f5c842;}
+
+  .author { display:flex; align-items:center; gap:10px; }
+  .av { width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:12px;flex-shrink:0; }
+  .av-name { font-size:12px;font-weight:700;color:#fff; }
+  .av-role { font-size:10px;color:#555;font-weight:300; }
+
+  .info-row { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.05); border-radius:7px; padding:9px 12px; }
+
+  .pill { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; margin:3px 2px; border:1px solid; }
+
+  /* memory diagram */
+  .mem-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mem-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 110px;
+    gap: 6px;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+  }
+  .mem-label { color: #555; text-align: right; }
+  .mem-cell { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 6px 8px; text-align: center; color: #ccc; }
+  .mem-addr { color: #4a5568; font-size: 9px; }
+
+  /* caption */
+  .caption-box { width:100%; max-width:360px; background:#0e1018; border:1px solid #1c1f2b; border-radius:14px; overflow:hidden; }
+  .cap-head { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid #1c1f2b; }
+  .cap-title { font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:2px; }
+  .copy-btn { margin-left:auto; background:#1c1f2b; border:none; color:#fff; font-family:'JetBrains Mono',monospace; font-size:9px; padding:5px 10px; border-radius:4px; cursor:pointer; letter-spacing:1px; text-transform:uppercase; transition:all 0.2s; }
+  .copy-btn:hover { background:#ef4444; }
+  .cap-body { padding:16px; font-size:13.5px; line-height:1.8; color:#bbb; white-space:pre-line; }
+  .cap-body strong { color:#ef4444; }
+  .cap-tags { padding:8px 16px 14px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#ef4444; opacity:0.6; line-height:1.9; }
+
+  .divider { width:100%; max-width:360px; display:flex; align-items:center; gap:12px; color:#222; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; }
+  .divider::before,.divider::after { content:''; flex:1; height:1px; background:#1a1a22; }
+</style>
+</head>
+<body>
+
+<div class="page-label">Nde Julius · <span>Day 6 Done ✓</span> · Week 2 · Story Cards</div>
+<div class="page-label" style="color:#555; margin-bottom:4px;">Scroll · Screenshot each · Post</div>
+
+<!-- ══ CARD 1: COVER ══ -->
+<div class="card c1">
+  <div class="grid"></div>
+  <div class="big-num" style="font-size:260px; color:rgba(239,68,68,0.05); bottom:-40px; right:-25px;">6</div>
+
+  <div class="top">
+    <div class="tag" style="color:#ef4444;">
+      <div class="dot" style="background:#ef4444;"></div>
+      STAGE 0 · WEEK 2 · MON · DONE
+    </div>
+  </div>
+  <div class="card-num">1 / 8</div>
+
+  <div class="mid" style="gap:10px;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#444; letter-spacing:2px;">MECHATRONICS JOURNEY</div>
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:72px; line-height:0.85; letter-spacing:2px; color:#fff;">DAY<br><span style="color:#ef4444;">SIX</span><br><span style="font-size:32px; color:#10b981; letter-spacing:3px;">DONE. ✓</span></div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; margin-top:6px; line-height:1.7;">5 programs · Strings · Pointers<br>Memory addresses · Dereference · Array+pointer</div>
+    <div style="display:flex; gap:7px; flex-wrap:wrap; margin-top:6px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(239,68,68,0.3); background:rgba(239,68,68,0.07); color:#ef4444;">strings</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(239,68,68,0.3); background:rgba(239,68,68,0.07); color:#ef4444;">pointers</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(16,185,129,0.3); background:rgba(16,185,129,0.07); color:#10b981;">54 days left</span>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#ef4444; color:#fff;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Physics → Mechatronics · Day 6 of 60</div></div>
+      <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">SCROLL ↓</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 2: ALL 5 PROGRAMS ══ -->
+<div class="card c2">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#10b981;">
+      <div class="dot" style="background:#10b981;"></div>
+      5 PROGRAMS TODAY
+    </div>
+  </div>
+  <div class="card-num">2 / 8</div>
+
+  <div class="mid" style="gap:9px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1;">WHAT I<br><span style="color:#10b981;">BUILT</span></div>
+
+    <div style="display:flex; flex-direction:column; gap:7px;">
+      <div class="info-row">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; color:rgba(16,185,129,0.4); width:18px;">1</div>
+        <div><div style="font-size:13px; font-weight:700; color:#ccc;">char str[20] + scanf(%s)</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">string as char array · %s format</div></div>
+        <span style="margin-left:auto; color:#10b981;">✓</span>
+      </div>
+      <div class="info-row">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; color:rgba(16,185,129,0.4); width:18px;">2</div>
+        <div><div style="font-size:13px; font-weight:700; color:#ccc;">fgets(str, sizeof(str), stdin)</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">safer string input — buffer overflow safe</div></div>
+        <span style="margin-left:auto; color:#10b981;">✓</span>
+      </div>
+      <div class="info-row" style="border-color:rgba(239,68,68,0.2); background:rgba(239,68,68,0.05);">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; color:rgba(239,68,68,0.5); width:18px;">3</div>
+        <div><div style="font-size:13px; font-weight:700; color:#fca5a5;">int* ptr = &age · printf(%p)</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">FIRST POINTER — memory address!</div></div>
+        <span style="margin-left:auto; color:#ef4444;">🔥</span>
+      </div>
+      <div class="info-row" style="border-color:rgba(239,68,68,0.2); background:rgba(239,68,68,0.05);">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; color:rgba(239,68,68,0.5); width:18px;">4</div>
+        <div><div style="font-size:13px; font-weight:700; color:#fca5a5;">*ptr dereference — read value</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">address + value both printed</div></div>
+        <span style="margin-left:auto; color:#ef4444;">🔥</span>
+      </div>
+      <div class="info-row" style="border-color:rgba(239,68,68,0.2); background:rgba(239,68,68,0.05);">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:20px; color:rgba(239,68,68,0.5); width:18px;">5</div>
+        <div><div style="font-size:13px; font-weight:700; color:#fca5a5;">Array + pointer — value AND address</div><div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace;">numbers[i] + &numbers[i] in loop</div></div>
+        <span style="margin-left:auto; color:#ef4444;">🔥</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#10b981; color:#000;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 6 · Week 2</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 3: STRINGS ══ -->
+<div class="card c3">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#3b82f6;">
+      <div class="dot" style="background:#3b82f6;"></div>
+      PROGRAMS 1 & 2 · STRINGS IN C
+    </div>
+  </div>
+  <div class="card-num">3 / 8</div>
+
+  <div class="mid" style="gap:12px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:2px; color:#fff; line-height:1.05;">STRINGS ARE<br><span style="color:#3b82f6;">CHAR ARRAYS</span></div>
+
+    <div class="code-block" style="font-size:10.5px;">
+<span class="cmt">// Method 1 — scanf</span>
+<span class="kw">char</span> str[<span class="num">20</span>];
+<span class="fn">printf</span>(<span class="str">"Enter name\n"</span>);
+<span class="fn">scanf</span>(<span class="str">"%s"</span>, str);
+<span class="fn">printf</span>(<span class="str">"%s"</span>, str);
+
+<span class="cmt">// Method 2 — fgets (safer!)</span>
+<span class="fn">fgets</span>(str, <span class="kw">sizeof</span>(str), stdin);
+<span class="fn">printf</span>(<span class="str">"%s"</span>, str);</div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+      <div style="background:rgba(59,130,246,0.07); border:1px solid rgba(59,130,246,0.2); border-radius:8px; padding:10px; text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#3b82f6; font-weight:700; margin-bottom:4px;">scanf("%s")</div>
+        <div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace; line-height:1.5;">stops at space — dangerous for long input</div>
+      </div>
+      <div style="background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.2); border-radius:8px; padding:10px; text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#10b981; font-weight:700; margin-bottom:4px;">fgets()</div>
+        <div style="font-size:10px; color:#555; font-family:'JetBrains Mono',monospace; line-height:1.5;">reads full line — buffer safe ✓</div>
+      </div>
+    </div>
+
+    <div style="background:rgba(59,130,246,0.07); border:1px solid rgba(59,130,246,0.2); border-radius:8px; padding:11px 13px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; line-height:1.6;">
+      ⚡ In embedded: sensor names, UART commands, and config data are all stored as char arrays. <span style="color:#3b82f6;">fgets is what real firmware uses.</span>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#3b82f6; color:#fff;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 6 · Week 2</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 4: FIRST POINTER ══ -->
+<div class="card c4">
+  <div class="grid"></div>
+  <div class="big-num" style="font-size:130px; color:rgba(239,68,68,0.05); top:60px; right:-10px;">*ptr</div>
+  <div class="top">
+    <div class="tag" style="color:#ef4444;">
+      <div class="dot" style="background:#ef4444;"></div>
+      PROGRAM 3 · FIRST POINTER 🔥
+    </div>
+  </div>
+  <div class="card-num">4 / 8</div>
+
+  <div class="mid" style="gap:12px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:2px; color:#fff; line-height:1.05;">MEMORY<br><span style="color:#ef4444;">ADDRESS</span></div>
+
+    <div class="code-block">
+<span class="ty">int</span> age;
+<span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&amp;</span>age);
+
+<span class="cmt">// Create pointer to age</span>
+<span class="ty">int</span>* ptr <span class="op">=</span> <span class="op">&amp;</span>age;
+
+<span class="cmt">// Print address</span>
+<span class="fn">printf</span>(<span class="str">"%p"</span>, ptr);
+
+<span class="cmt">// Print value through pointer</span>
+<span class="fn">printf</span>(<span class="str">"\nvalue %d"</span>, <span class="op">*</span>ptr);</div>
+
+    <!-- memory diagram -->
+    <div style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.18); border-radius:8px; padding:12px 14px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#ef4444; letter-spacing:2px; margin-bottom:10px;">MEMORY DIAGRAM</div>
+      <div class="mem-box">
+        <div class="mem-row">
+          <div class="mem-label">variable age</div>
+          <div class="mem-cell" style="color:#ef4444; border-color:rgba(239,68,68,0.3);">25</div>
+          <div class="mem-addr">0x61ff08</div>
+        </div>
+        <div class="mem-row">
+          <div class="mem-label">pointer ptr</div>
+          <div class="mem-cell">0x61ff08</div>
+          <div class="mem-addr">stores address</div>
+        </div>
+        <div class="mem-row">
+          <div class="mem-label">*ptr reads</div>
+          <div class="mem-cell" style="color:#10b981; border-color:rgba(16,185,129,0.3);">25</div>
+          <div class="mem-addr">value at addr</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#ef4444; color:#fff;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 6 · Week 2</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 5: ARRAY + POINTER ══ -->
+<div class="card c5">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#6366f1;">
+      <div class="dot" style="background:#6366f1;"></div>
+      PROGRAM 5 · ARRAY + POINTER
+    </div>
+  </div>
+  <div class="card-num">5 / 8</div>
+
+  <div class="mid" style="gap:12px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:2px; color:#fff; line-height:1.05;">VALUE AND<br><span style="color:#6366f1;">ADDRESS TOGETHER</span></div>
+
+    <div class="code-block" style="font-size:10.5px;">
+<span class="ty">int</span> numbers[<span class="num">10</span>] <span class="op">=</span> {<span class="num">1</span>,<span class="num">14</span>,<span class="num">51</span>,<span class="num">54</span>,<span class="num">54</span>,
+                   <span class="num">21</span>,<span class="num">36</span>,<span class="num">24</span>,<span class="num">25</span>,<span class="num">54</span>};
+
+<span class="kw">for</span>(<span class="ty">int</span> i<span class="op">=</span><span class="num">0</span>; i<span class="op">&lt;</span><span class="num">10</span>; <span class="op">++</span>i) {
+    <span class="fn">printf</span>(<span class="str">"%d = %p\n"</span>,
+        numbers[i],
+        <span class="op">&amp;</span>numbers[i]);
+}</div>
+
+    <div style="background:rgba(99,102,241,0.07); border:1px solid rgba(99,102,241,0.2); border-radius:8px; padding:11px 13px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#6366f1; letter-spacing:2px; margin-bottom:5px;">WHAT YOU DISCOVERED</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; line-height:1.7;">Each element has a value AND a memory address. Addresses increase by <span style="color:#6366f1;">4 bytes</span> each step — exactly the size of an int. Arrays are just consecutive memory blocks.</div>
+    </div>
+
+    <div style="background:rgba(239,68,68,0.07); border:1px solid rgba(239,68,68,0.2); border-radius:8px; padding:11px 13px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; line-height:1.6;">
+      ⚡ This is how microcontrollers store sensor buffers — 10 ADC readings in consecutive memory. You just visualized it.
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#6366f1; color:#fff;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 6 · Week 2</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 6: KEY CONCEPTS ══ -->
+<div class="card c6">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#10b981;">
+      <div class="dot" style="background:#10b981;"></div>
+      KEY CONCEPTS UNLOCKED
+    </div>
+  </div>
+  <div class="card-num">6 / 8</div>
+
+  <div class="mid" style="gap:13px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:2px; color:#fff; line-height:1.05;">WHAT YOUR<br><span style="color:#10b981;">BRAIN LEARNED</span></div>
+
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div style="background:rgba(239,68,68,0.07); border:1px solid rgba(239,68,68,0.2); border-radius:8px; padding:12px 14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#ef4444; letter-spacing:2px; margin-bottom:4px;">&amp; OPERATOR</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; line-height:1.6;">&amp;age returns the memory address where age lives. You used this since Day 1 in scanf — now you know WHY.</div>
+      </div>
+      <div style="background:rgba(239,68,68,0.07); border:1px solid rgba(239,68,68,0.2); border-radius:8px; padding:12px 14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#ef4444; letter-spacing:2px; margin-bottom:4px;">* DEREFERENCE</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; line-height:1.6;">*ptr reads or writes the value at the address ptr holds. It follows the map to the house.</div>
+      </div>
+      <div style="background:rgba(59,130,246,0.07); border:1px solid rgba(59,130,246,0.2); border-radius:8px; padding:12px 14px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#3b82f6; letter-spacing:2px; margin-bottom:4px;">STRINGS = CHAR[]</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; line-height:1.6;">A string in C is just a char array ending with \0. fgets is safer than scanf for reading full lines.</div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:5px;">
+      <span class="pill" style="color:#ef4444; border-color:rgba(239,68,68,0.25); background:rgba(239,68,68,0.07);">int* ptr</span>
+      <span class="pill" style="color:#ef4444; border-color:rgba(239,68,68,0.25); background:rgba(239,68,68,0.07);">&amp;variable</span>
+      <span class="pill" style="color:#ef4444; border-color:rgba(239,68,68,0.25); background:rgba(239,68,68,0.07);">*ptr</span>
+      <span class="pill" style="color:#ef4444; border-color:rgba(239,68,68,0.25); background:rgba(239,68,68,0.07);">%p format</span>
+      <span class="pill" style="color:#3b82f6; border-color:rgba(59,130,246,0.25); background:rgba(59,130,246,0.07);">char str[]</span>
+      <span class="pill" style="color:#3b82f6; border-color:rgba(59,130,246,0.25); background:rgba(59,130,246,0.07);">fgets()</span>
+      <span class="pill" style="color:#3b82f6; border-color:rgba(59,130,246,0.25); background:rgba(59,130,246,0.07);">sizeof(str)</span>
+      <span class="pill" style="color:#6366f1; border-color:rgba(99,102,241,0.25); background:rgba(99,102,241,0.07);">&amp;arr[i]</span>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#10b981; color:#000;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 6 · Week 2</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 7: EMBEDDED CONNECTION ══ -->
+<div class="card c7">
+  <div class="grid"></div>
+  <div class="top">
+    <div class="tag" style="color:#f59e0b;">
+      <div class="dot" style="background:#f59e0b;"></div>
+      WHY POINTERS MATTER IN EMBEDDED
+    </div>
+  </div>
+  <div class="card-num">7 / 8</div>
+
+  <div class="mid" style="gap:13px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:2px; color:#fff; line-height:1.05;">THIS IS THE<br><span style="color:#f59e0b;">REAL STUFF</span></div>
+
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div style="display:flex; gap:12px; align-items:center; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:11px 13px;">
+        <span style="font-size:20px; flex-shrink:0;">🔌</span>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; line-height:1.6;"><span style="color:#f59e0b;">GPIO registers</span> in STM32 are memory addresses. You write to them with pointers.</div>
+      </div>
+      <div style="display:flex; gap:12px; align-items:center; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:11px 13px;">
+        <span style="font-size:20px; flex-shrink:0;">📡</span>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; line-height:1.6;"><span style="color:#f59e0b;">Sensor buffers</span> — pass pointer to array so function fills it without copying data.</div>
+      </div>
+      <div style="display:flex; gap:12px; align-items:center; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:11px 13px;">
+        <span style="font-size:20px; flex-shrink:0;">⚡</span>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; line-height:1.6;"><span style="color:#f59e0b;">DMA transfers</span> — Direct Memory Access uses pointers to move data without CPU.</div>
+      </div>
+      <div style="display:flex; gap:12px; align-items:center; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:11px 13px;">
+        <span style="font-size:20px; flex-shrink:0;">🤖</span>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888; line-height:1.6;"><span style="color:#f59e0b;">scanf(&age)</span> — you've been using pointers since Day 1 without knowing it!</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#f59e0b; color:#000;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Day 6 · Week 2</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 8: OUTRO ══ -->
+<div class="card c8">
+  <div class="grid"></div>
+  <div class="big-num" style="font-size:200px; color:rgba(239,68,68,0.05); bottom:-30px; right:-20px;">54</div>
+
+  <div class="top">
+    <div class="tag" style="color:#10b981;">
+      <div class="dot" style="background:#10b981;"></div>
+      DAY 6 COMPLETE · WEEK 2 ROLLING
+    </div>
+  </div>
+  <div class="card-num">8 / 8</div>
+
+  <div class="mid" style="gap:13px;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:44px; letter-spacing:2px; color:#fff; line-height:0.95;">54 DAYS<br><span style="color:#10b981;">REMAINING</span></div>
+
+    <div style="background:rgba(239,68,68,0.07); border:1px solid rgba(239,68,68,0.2); border-radius:10px; padding:14px 16px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#ef4444; letter-spacing:2px; margin-bottom:8px;">TOMORROW · DAY 7</div>
+      <div style="font-size:15px; font-weight:700; color:#fff; margin-bottom:5px;">Structs in C</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; line-height:1.7;">Group related data together. Model a sensor, a robot joint, or a motor — struct is how embedded firmware organizes real-world objects.</div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:7px; text-align:center;">
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:26px; color:#ef4444;">5</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#444; text-transform:uppercase;">Programs</div>
+      </div>
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:26px; color:#10b981;">3h</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#444; text-transform:uppercase;">Logged</div>
+      </div>
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:26px; color:#f59e0b;">8</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#444; text-transform:uppercase;">Concepts</div>
+      </div>
+      <div style="border:1px solid #1a1f2e; border-radius:8px; padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:26px; color:#6366f1;">6</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#444; text-transform:uppercase;">Days Done</div>
+      </div>
+    </div>
+
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#333; text-align:center; letter-spacing:1px; line-height:2;">
+      #Mechatronics #CProgramming #Pointers<br>#EmbeddedSystems #Day6Done #LearnInPublic
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:linear-gradient(135deg,#ef4444,#10b981); color:#fff;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Follow for Day 7 tomorrow 👇</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DIVIDER -->
+<div class="divider">Captions</div>
+
+<!-- TIKTOK -->
+<div class="caption-box">
+  <div class="cap-head">
+    <span style="font-size:16px;">🎵</span>
+    <span class="cap-title">TikTok</span>
+    <button class="copy-btn" onclick="copyText('tt')">Copy</button>
+  </div>
+  <div class="cap-body" id="tt"><strong>Day 6. I finally understand pointers in C 🔥</strong>
+
+Physics grad → Mechatronics Engineer. Week 2 has started.
+
+Today I learned the hardest concept in C:
+
+✅ Strings as char arrays — scanf vs fgets
+✅ int* ptr = &age — my FIRST pointer
+✅ printf("%p") — printing a real memory address
+✅ *ptr — dereferencing to read the value
+✅ Array + pointer — value AND address of every element
+
+The moment it clicked: I've been using pointers since Day 1. scanf("%d", &age) — that &age IS a pointer. I just didn't know it.
+
+Now I do. 54 days left. 🧠⚡</div>
+  <div class="cap-tags">#CProgramming #Pointers #Mechatronics #EmbeddedSystems #Day6 #LearnToCode #STEMJourney #WeekTwo #LearnInPublic #Day6Done</div>
+</div>
+
+<!-- LINKEDIN -->
+<div class="caption-box">
+  <div class="cap-head">
+    <span style="font-size:16px;">💼</span>
+    <span class="cap-title">LinkedIn</span>
+    <button class="copy-btn" onclick="copyText('li')">Copy</button>
+  </div>
+  <div class="cap-body" id="li"><strong>Day 6 — Pointers and Strings in C. Week 2 begins. ✅</strong>
+
+Pointers are where most C beginners give up. Today I didn't.
+
+5 programs written:
+→ char str[20] with scanf("%s") — strings as char arrays
+→ fgets(str, sizeof(str), stdin) — safer buffer-aware input
+→ int* ptr = &age — first explicit pointer declaration
+→ printf("%p", ptr) — printing a real memory address
+→ Array traversal printing both value and address of each element
+
+The key insight: I've been using pointers since Day 1. scanf("%d", &age) passes the address of age to the function so it can write directly into memory. That &age is a pointer. Understanding this changes how you read all C code.
+
+The embedded connection: GPIO registers in STM32 microcontrollers are memory-mapped addresses. Writing to a pin is literally dereferencing a pointer to a hardware register. Pointers aren't just a language feature — they're how you talk to hardware.
+
+6 days logged. 54 remaining. Week 2 is underway.</div>
+  <div class="cap-tags">#Mechatronics #CProgramming #Pointers #EmbeddedSystems #LearnInPublic #EngineeringCommunity #WeekTwo #CareerDevelopment #Robotics #GrowthMindset</div>
+</div>
+
+<script>
+  function copyText(id) {
+    const el = document.getElementById(id);
+    const panel = el.closest('.caption-box');
+    const btn = panel.querySelector('.copy-btn');
+    navigator.clipboard.writeText(el.innerText).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Done';
+      btn.style.background = '#10b981';
+      btn.style.color = '#000';
+      setTimeout(() => { btn.textContent = orig; btn.style.background=''; btn.style.color=''; }, 2000);
+    });
+  }
+</script>
+</body>
+</html>

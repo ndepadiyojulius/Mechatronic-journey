@@ -1,0 +1,3 @@
+Sensor: Temperature | Value: 72.50 | Pin: 0
+Sensor: Pressure | Value: 35.00 | Pin: 2
+Sensor: Humidity | Value: 88.30 | Pin: 5

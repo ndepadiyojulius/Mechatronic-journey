@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C Basics Complete — Nde Julius</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #050608; font-family: 'Barlow Condensed', sans-serif; padding: 24px 16px 60px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+  .page-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: #333; text-transform: uppercase; text-align: center; }
+  .page-label span { color: #f59e0b; }
+
+  .card { width: 100%; max-width: 360px; aspect-ratio: 9/16; border-radius: 20px; overflow: hidden; position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 28px 24px; flex-shrink: 0; }
+  .card-num { position: absolute; top: 16px; right: 20px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.15); letter-spacing: 1px; z-index: 2; }
+
+  .c1 { background: #090700; }
+  .c1::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(245,158,11,0.28) 0%, transparent 55%), radial-gradient(ellipse 50% 40% at 10% 90%, rgba(16,185,129,0.15) 0%, transparent 50%); pointer-events:none; }
+
+  .c2 { background: #060a08; }
+  .c2::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 65% 55% at 50% 10%, rgba(16,185,129,0.18) 0%, transparent 60%); pointer-events:none; }
+
+  .c3 { background: #080608; }
+  .c3::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse at top right, rgba(168,85,247,0.18) 0%, transparent 55%); pointer-events:none; }
+
+  .c4 { background: #07090c; }
+  .c4::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse at bottom, rgba(59,130,246,0.15) 0%, transparent 55%); pointer-events:none; }
+
+  .c5 { background: #090700; }
+  .c5::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(245,158,11,0.2) 0%, transparent 60%); pointer-events:none; }
+
+  .grid { position:absolute; inset:0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px), linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px); background-size:32px 32px; pointer-events:none; z-index:0; }
+  .big-num { font-family:'Bebas Neue',sans-serif; letter-spacing:-4px; line-height:1; position:absolute; pointer-events:none; z-index:0; }
+  .top { z-index:1; } .mid { z-index:1; flex:1; display:flex; flex-direction:column; justify-content:center; gap:11px; } .bot { z-index:1; }
+  .tag { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:3px; text-transform:uppercase; display:inline-flex; align-items:center; gap:6px; }
+  .dot { width:6px; height:6px; border-radius:50%; }
+  .code-block { background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:10.5px; line-height:1.8; z-index:1; }
+  .kw{color:#ff7b72;} .fn{color:#d2a8ff;} .str{color:#79c0ff;} .num{color:#f97316;} .cmt{color:#4a5568;font-style:italic;} .ty{color:#10b981;} .op{color:#f5c842;}
+  .author { display:flex; align-items:center; gap:10px; }
+  .av { width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:12px;flex-shrink:0; }
+  .av-name { font-size:12px;font-weight:700;color:#fff; } .av-role { font-size:10px;color:#555;font-weight:300; }
+  .pill { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 9px; border-radius:4px; margin:3px 2px; border:1px solid; }
+  .caption-box { width:100%; max-width:360px; background:#0e1018; border:1px solid #1c1f2b; border-radius:14px; overflow:hidden; }
+  .cap-head { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid #1c1f2b; }
+  .cap-title { font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:2px; }
+  .copy-btn { margin-left:auto; background:#1c1f2b; border:none; color:#fff; font-family:'JetBrains Mono',monospace; font-size:9px; padding:5px 10px; border-radius:4px; cursor:pointer; letter-spacing:1px; text-transform:uppercase; transition:all 0.2s; }
+  .copy-btn:hover { background:#f59e0b; color:#000; }
+  .cap-body { padding:16px; font-size:13.5px; line-height:1.8; color:#bbb; white-space:pre-line; }
+  .cap-body strong { color:#f59e0b; }
+  .cap-tags { padding:8px 16px 14px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#f59e0b; opacity:0.6; line-height:1.9; }
+  .divider { width:100%; max-width:360px; display:flex; align-items:center; gap:12px; color:#222; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; }
+  .divider::before,.divider::after { content:''; flex:1; height:1px; background:#1a1a22; }
+</style>
+</head>
+<body>
+
+<div class="page-label">Nde Julius · <span>C Basics COMPLETE 🏆</span> · Story Cards</div>
+<div class="page-label" style="color:#555; margin-bottom:4px;">Scroll · Screenshot each · Post</div>
+
+<!-- ══ CARD 1: COVER ══ -->
+<div class="card c1">
+  <div class="grid"></div>
+  <div class="big-num" style="font-size:200px;color:rgba(245,158,11,0.06);bottom:-30px;right:-20px;">✓</div>
+
+  <div class="top">
+    <div class="tag" style="color:#f59e0b;"><div class="dot" style="background:#f59e0b;"></div>STAGE 0 · C BASICS · COMPLETE</div>
+  </div>
+  <div class="card-num">1 / 5</div>
+
+  <div class="mid" style="gap:12px;">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#444;letter-spacing:2px;">MECHATRONICS JOURNEY</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:64px;line-height:0.85;letter-spacing:2px;color:#fff;">C<br>BASICS<br><span style="color:#f59e0b;">DONE.</span><br><span style="font-size:42px;color:#10b981;">🏆</span></div>
+
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#555;margin-top:4px;line-height:1.7;">8 days · 30+ programs · 50+ concepts<br>From Hello World → Sensor Firmware</div>
+
+    <!-- completion bar -->
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;letter-spacing:2px;">C BASICS PROGRESS</div>
+      <div style="display:flex;gap:3px;">
+        <div style="flex:1;height:8px;border-radius:3px;background:#f59e0b;"></div>
+        <div style="flex:1;height:8px;border-radius:3px;background:#f59e0b;"></div>
+        <div style="flex:1;height:8px;border-radius:3px;background:#f59e0b;"></div>
+        <div style="flex:1;height:8px;border-radius:3px;background:#f59e0b;"></div>
+        <div style="flex:1;height:8px;border-radius:3px;background:#f59e0b;"></div>
+        <div style="flex:1;height:8px;border-radius:3px;background:#f59e0b;"></div>
+        <div style="flex:1;height:8px;border-radius:3px;background:#f59e0b;"></div>
+        <div style="flex:1;height:8px;border-radius:3px;background:#f59e0b;"></div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#f59e0b;text-align:right;">8 / 8 days ✓ COMPLETE</div>
+    </div>
+
+    <div style="display:flex;gap:7px;flex-wrap:wrap;">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 9px;border-radius:4px;border:1px solid rgba(245,158,11,0.3);background:rgba(245,158,11,0.07);color:#f59e0b;">30+ programs</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 9px;border-radius:4px;border:1px solid rgba(16,185,129,0.3);background:rgba(16,185,129,0.07);color:#10b981;">50+ concepts</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 9px;border-radius:4px;border:1px solid rgba(168,85,247,0.3);background:rgba(168,85,247,0.07);color:#a855f7;">52 days left</span>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:#f59e0b;color:#000;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Physics → Mechatronics · C Complete</div></div>
+      <div style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;color:#333;">SCROLL ↓</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CARD 2: CAPSTONE OUTPUT ══ -->
+<div class="card c2">
+  <div class="grid"></div>
+  <div class="top"><div class="tag" style="color:#10b981;"><div class="dot" style="background:#10b981;"></div>CAPSTONE PROJECT · SENSOR DASHBOARD</div></div>
+  <div class="card-num">2 / 5</div>
+
+  <div class="mid" style="gap:11px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;color:#fff;line-height:1.05;">REAL FIRMWARE<br><span style="color:#10b981;">RUNNING ON PC</span></div>
+
+    <!-- OUTPUT RECREATION -->
+    <div style="background:rgba(0,0,0,0.7);border:1px solid rgba(16,185,129,0.2);border-radius:10px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.9;color:#ccc;">
+      <div style="color:#f59e0b;margin-bottom:6px;">=== SENSOR DASHBOARD ===</div>
+      <div style="color:#888;">--- <span style="color:#fff;">Temperature</span> ---</div>
+      <div>Value  : <span style="color:#10b981;">72.50</span></div>
+      <div>Pin    : 0 · Status: <span style="color:#10b981;">ACTIVE</span></div>
+      <div>Alert  : <span style="color:#ef4444;">⚠ ABOVE THRESHOLD</span></div>
+      <div style="color:#888;margin-top:6px;">--- <span style="color:#fff;">Pressure</span> ---</div>
+      <div>Value  : <span style="color:#10b981;">35.00</span></div>
+      <div>Alert  : <span style="color:#10b981;">OK</span></div>
+      <div style="color:#888;margin-top:6px;">--- <span style="color:#fff;">Humidity</span> ---</div>
+      <div>Value  : <span style="color:#10b981;">88.30</span></div>
+      <div>Alert  : <span style="color:#ef4444;">⚠ ABOVE THRESHOLD</span></div>
+      <div style="margin-top:8px;">GPIO: <span style="color:#f59e0b;">37</span> → Pin 0: ON · Pin 2: ON · Pin 5: ON</div>
+      <div style="color:#10b981;margin-top:4px;">Data saved to sensors.txt ✓</div>
+    </div>
+
+    <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:12px 14px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#f59e0b;letter-spacing:2px;margin-bottom:5px;">GPIO=37 IS MATHEMATICALLY PERFECT</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#888;line-height:1.7;">Pin 0 = 2⁰ = 1<br>Pin 2 = 2² = 4<br>Pin 5 = 2⁵ = 32<br><span style="color:#f59e0b;">1 + 4 + 32 = 37 ✓</span></div>
+    </div>
+  </div>
+
+  <div class="bot"><div class="author"><div class="av" style="background:#10b981;color:#000;">NJ</div><div><div class="av-name">Nde Julius</div><div class="av-role">C Capstone · Complete</div></div></div></div>
+</div>
+
+<!-- ══ CARD 3: EVERYTHING USED ══ -->
+<div class="card c3">
+  <div class="grid"></div>
+  <div class="top"><div class="tag" style="color:#a855f7;"><div class="dot" style="background:#a855f7;"></div>ONE PROJECT · ALL CONCEPTS</div></div>
+  <div class="card-num">3 / 5</div>
+
+  <div class="mid" style="gap:11px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;color:#fff;line-height:1.05;">12 CONCEPTS<br><span style="color:#a855f7;">ONE PROGRAM</span></div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:5px;">
+      <span class="pill" style="color:#f59e0b;border-color:rgba(245,158,11,0.25);background:rgba(245,158,11,0.07);">struct Sensor</span>
+      <span class="pill" style="color:#f59e0b;border-color:rgba(245,158,11,0.25);background:rgba(245,158,11,0.07);">enum Status</span>
+      <span class="pill" style="color:#f59e0b;border-color:rgba(245,158,11,0.25);background:rgba(245,158,11,0.07);">typedef</span>
+      <span class="pill" style="color:#10b981;border-color:rgba(16,185,129,0.25);background:rgba(16,185,129,0.07);">malloc/free</span>
+      <span class="pill" style="color:#10b981;border-color:rgba(16,185,129,0.25);background:rgba(16,185,129,0.07);">pointers *&amp;</span>
+      <span class="pill" style="color:#10b981;border-color:rgba(16,185,129,0.25);background:rgba(16,185,129,0.07);">arrow -></span>
+      <span class="pill" style="color:#ef4444;border-color:rgba(239,68,68,0.25);background:rgba(239,68,68,0.07);">bitmasking</span>
+      <span class="pill" style="color:#ef4444;border-color:rgba(239,68,68,0.25);background:rgba(239,68,68,0.07);">gpio |= 1&lt;&lt;n</span>
+      <span class="pill" style="color:#3b82f6;border-color:rgba(59,130,246,0.25);background:rgba(59,130,246,0.07);">FILE* I/O</span>
+      <span class="pill" style="color:#3b82f6;border-color:rgba(59,130,246,0.25);background:rgba(59,130,246,0.07);">#define</span>
+      <span class="pill" style="color:#a855f7;border-color:rgba(168,85,247,0.25);background:rgba(168,85,247,0.07);">functions</span>
+      <span class="pill" style="color:#a855f7;border-color:rgba(168,85,247,0.25);background:rgba(168,85,247,0.07);">arrays+loops</span>
+    </div>
+
+    <div style="background:rgba(168,85,247,0.07);border:1px solid rgba(168,85,247,0.2);border-radius:8px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#888;line-height:1.7;">
+      This is not a student exercise. This is the <span style="color:#a855f7;">architecture of real STM32 firmware</span>. Sensor structs, GPIO bitmasks, status enums, file logging — production embedded code uses exactly this pattern.
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;text-align:center;">
+      <div style="border:1px solid #1a1f2e;border-radius:8px;padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:#f59e0b;">8</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#444;text-transform:uppercase;">Days</div>
+      </div>
+      <div style="border:1px solid #1a1f2e;border-radius:8px;padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:#10b981;">30+</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#444;text-transform:uppercase;">Programs</div>
+      </div>
+      <div style="border:1px solid #1a1f2e;border-radius:8px;padding:10px 6px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:#a855f7;">50+</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#444;text-transform:uppercase;">Concepts</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bot"><div class="author"><div class="av" style="background:#a855f7;color:#fff;">NJ</div><div><div class="av-name">Nde Julius</div><div class="av-role">C Basics · Complete</div></div></div></div>
+</div>
+
+<!-- ══ CARD 4: WHAT'S NEXT ══ -->
+<div class="card c4">
+  <div class="grid"></div>
+  <div class="top"><div class="tag" style="color:#3b82f6;"><div class="dot" style="background:#3b82f6;"></div>WHAT COMES NEXT</div></div>
+  <div class="card-num">4 / 5</div>
+
+  <div class="mid" style="gap:11px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:2px;color:#fff;line-height:1.05;">THE ROAD<br><span style="color:#3b82f6;">AHEAD</span></div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;gap:12px;align-items:center;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:11px 13px;">
+        <span style="font-size:20px;flex-shrink:0;">🐍</span>
+        <div><div style="font-size:14px;font-weight:700;color:#10b981;">Next — Python Basics</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#555;margin-top:2px;">3 days · scripting · NumPy · data tools</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:11px 13px;">
+        <span style="font-size:20px;flex-shrink:0;">🐧</span>
+        <div><div style="font-size:14px;font-weight:700;color:#ccc;">Then — Linux + Git</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#555;margin-top:2px;">2 days · CLI · push code to GitHub</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:11px 13px;">
+        <span style="font-size:20px;flex-shrink:0;">🤖</span>
+        <div><div style="font-size:14px;font-weight:700;color:#3b82f6;">Stage 1 — Arduino</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#555;margin-top:2px;">GPIO · ADC · PWM · I²C · SPI · sensors</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:11px 13px;">
+        <span style="font-size:20px;flex-shrink:0;">⚡</span>
+        <div><div style="font-size:14px;font-weight:700;color:#ccc;">Stage 2 — STM32 + ESP32</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#555;margin-top:2px;">real microcontrollers · FreeRTOS</div></div>
+      </div>
+    </div>
+
+    <div style="background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#666;line-height:1.6;text-align:center;">
+      The C you just learned is the <span style="color:#3b82f6;">exact language</span> that programs every microcontroller, PLC, and embedded system on your roadmap. 🔥
+    </div>
+  </div>
+
+  <div class="bot"><div class="author"><div class="av" style="background:#3b82f6;color:#fff;">NJ</div><div><div class="av-name">Nde Julius</div><div class="av-role">Stage 0 → Stage 1 incoming 🚀</div></div></div></div>
+</div>
+
+<!-- ══ CARD 5: OUTRO ══ -->
+<div class="card c5">
+  <div class="grid"></div>
+  <div class="big-num" style="font-size:180px;color:rgba(245,158,11,0.05);bottom:-20px;right:-20px;">52</div>
+
+  <div class="top"><div class="tag" style="color:#f59e0b;"><div class="dot" style="background:#f59e0b;"></div>C BASICS COMPLETE · STAGE 0 ROLLING</div></div>
+  <div class="card-num">5 / 5</div>
+
+  <div class="mid" style="gap:13px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:2px;color:#fff;line-height:0.95;">52 DAYS<br><span style="color:#f59e0b;">REMAINING</span></div>
+
+    <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:16px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#f59e0b;letter-spacing:2px;margin-bottom:10px;">WHAT YOU BUILT IN 8 DAYS</div>
+      <div style="display:flex;flex-direction:column;gap:5px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#888;line-height:1.6;">
+        <div><span style="color:#10b981;">✓</span> Console calculator with 4 functions</div>
+        <div><span style="color:#10b981;">✓</span> GTK GUI desktop application</div>
+        <div><span style="color:#10b981;">✓</span> File I/O data logger</div>
+        <div><span style="color:#10b981;">✓</span> Dynamic memory programs</div>
+        <div><span style="color:#10b981;">✓</span> GPIO bitmask simulator</div>
+        <div><span style="color:#f59e0b;">🏆</span> Embedded sensor firmware simulator</div>
+      </div>
+    </div>
+
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#555;text-align:center;line-height:1.8;padding:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:8px;">
+      8 days ago you couldn't write C.<br>Today you wrote <span style="color:#f59e0b;">sensor firmware.</span><br>That is not normal progress. 🔥
+    </div>
+
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#333;text-align:center;letter-spacing:1px;line-height:2;">#Mechatronics #CProgramming #CComplete<br>#EmbeddedSystems #Milestone #LearnInPublic</div>
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av" style="background:linear-gradient(135deg,#f59e0b,#10b981);color:#000;">NJ</div>
+      <div><div class="av-name">Nde Julius</div><div class="av-role">Python starts next 🐍</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DIVIDER -->
+<div class="divider">Captions</div>
+
+<!-- TIKTOK -->
+<div class="caption-box">
+  <div class="cap-head"><span style="font-size:16px;">🎵</span><span class="cap-title">TikTok</span><button class="copy-btn" onclick="copyText('tt')">Copy</button></div>
+  <div class="cap-body" id="tt"><strong>I just finished C programming in 8 days. Here's the proof 🔥</strong>
+
+Physics grad → Mechatronics Engineer. Day 8.
+
+My final C project just ran perfectly:
+
+=== SENSOR DASHBOARD ===
+Temperature: 72.50 → ABOVE THRESHOLD ⚠
+Pressure: 35.00 → OK ✅
+Humidity: 88.30 → ABOVE THRESHOLD ⚠
+GPIO Register: 37
+Pin 0: ON · Pin 2: ON · Pin 5: ON
+Data saved to sensors.txt ✓
+
+GPIO = 37 because 2⁰ + 2² + 2⁵ = 1+4+32 = 37. That's real bitmasking. That's real embedded math.
+
+This one program used: struct, enum, typedef, malloc, free, pointers, arrow operator, bitmasking, file I/O, #define, functions, arrays, loops.
+
+8 days ago I couldn't write C. Today I wrote sensor firmware. 52 days left. Python is next. 🐍⚡</div>
+  <div class="cap-tags">#CProgramming #Mechatronics #EmbeddedSystems #CComplete #Milestone #Day8 #LearnToCode #STEMJourney #LearnInPublic #SensorFirmware</div>
+</div>
+
+<!-- LINKEDIN -->
+<div class="caption-box">
+  <div class="cap-head"><span style="font-size:16px;">💼</span><span class="cap-title">LinkedIn</span><button class="copy-btn" onclick="copyText('li')">Copy</button></div>
+  <div class="cap-body" id="li"><strong>C programming basics — complete. 8 days. Here's what that looks like. 🏆</strong>
+
+My final C project ran perfectly today: an Embedded Sensor Simulator that outputs a real sensor dashboard, controls a GPIO register with bitmasking, and logs data to a file.
+
+The output:
+→ 3 sensors (Temperature, Pressure, Humidity) with values, pin assignments, and threshold alerts
+→ GPIO register = 37, with pins 0, 2, and 5 ON (1 + 4 + 32 = 37 — verified by bitmath)
+→ All data saved to sensors.txt
+
+This single program used every concept from 8 days of study:
+struct · enum · typedef · malloc/free · pointers · arrow operator · bitmasking · file I/O · #define macros · functions · arrays · loops · strings
+
+Why does this matter? This is the exact architecture of real STM32 HAL firmware. Sensor structs, GPIO bitmasks, status enums, and data logging — production embedded systems are built this way.
+
+What's next on my roadmap:
+→ Python basics (3 days)
+→ Linux + Git (2 days)
+→ Arduino Stage 1 — GPIO, ADC, PWM, I²C, SPI
+
+8 days down. 52 remaining. The foundation is solid.</div>
+  <div class="cap-tags">#Mechatronics #CProgramming #EmbeddedSystems #LearnInPublic #Milestone #EngineeringCommunity #CareerDevelopment #Robotics #Stage0 #GrowthMindset</div>
+</div>
+
+<script>
+  function copyText(id) {
+    const el = document.getElementById(id);
+    const panel = el.closest('.caption-box');
+    const btn = panel.querySelector('.copy-btn');
+    navigator.clipboard.writeText(el.innerText).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Done';
+      btn.style.background = '#10b981';
+      btn.style.color = '#000';
+      setTimeout(() => { btn.textContent = orig; btn.style.background=''; btn.style.color=''; }, 2000);
+    });
+  }
+</script>
+</body>
+</html>

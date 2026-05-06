@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 6 Goal — Nde Julius</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #050608;
+    font-family: 'Barlow Condensed', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 60px;
+    gap: 16px;
+  }
+
+  .page-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px;
+    color: #333; text-transform: uppercase; text-align: center;
+  }
+  .page-label span { color: #ef4444; }
+
+  .card {
+    width: 100%; max-width: 360px;
+    aspect-ratio: 9 / 16;
+    border-radius: 20px; overflow: hidden;
+    position: relative;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    padding: 28px 24px;
+    background: #080608;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 85% 8%, rgba(239,68,68,0.22) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 10% 92%, rgba(168,85,247,0.12) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+
+  .big-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 280px;
+    color: rgba(239,68,68,0.05);
+    position: absolute;
+    bottom: -40px; right: -25px;
+    letter-spacing: -8px; line-height: 1;
+    pointer-events: none;
+  }
+
+  .top { z-index: 1; }
+  .mid { z-index: 1; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+  .bot { z-index: 1; }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #ef4444;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #ef4444; }
+
+  /* WEEK BADGE */
+  .week-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #ef4444;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    width: fit-content;
+  }
+
+  /* CONCEPT BOX */
+  .concept-box {
+    background: rgba(239,68,68,0.07);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+
+  .concept-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: #ef4444;
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .concept-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    line-height: 1.5;
+  }
+  .concept-row:last-child { border-bottom: none; }
+  .concept-row span { color: #ef4444; flex-shrink: 0; }
+
+  /* PROGRAMS */
+  .prog-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .prog-item {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 7px; padding: 9px 12px;
+  }
+
+  .prog-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; color: rgba(239,68,68,0.4);
+    width: 18px; flex-shrink: 0; line-height: 1;
+  }
+
+  .prog-text { font-size: 13px; font-weight: 600; color: #ccc; line-height: 1.3; }
+  .prog-sub { font-size: 10px; color: #555; font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
+  .prog-arrow { margin-left: auto; font-size: 12px; color: rgba(239,68,68,0.4); flex-shrink: 0; }
+
+  /* TIME BLOCK */
+  .time-block {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px; padding: 12px 14px;
+  }
+
+  .time-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: #ef4444;
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .time-row {
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: #555;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .time-row:last-child { border-bottom: none; }
+  .time-row span { color: #aaa; }
+
+  /* WARNING BOX */
+  .warn-box {
+    background: rgba(245,158,11,0.07);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 8px;
+    padding: 11px 13px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #888;
+    line-height: 1.6;
+  }
+  .warn-box strong { color: #f59e0b; display: block; margin-bottom: 3px; letter-spacing: 1px; }
+
+  /* STATS */
+  .stats {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 7px;
+  }
+  .stat {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid #1a1f2e;
+    border-radius: 8px; padding: 10px 6px; text-align: center;
+  }
+  .stat-v { font-family: 'Bebas Neue', sans-serif; font-size: 24px; line-height: 1; margin-bottom: 2px; }
+  .stat-l { font-family: 'JetBrains Mono', monospace; font-size: 8px; color: #444; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* AUTHOR */
+  .author { display: flex; align-items: center; gap: 10px; }
+  .av { width: 30px; height: 30px; border-radius: 50%; background: #ef4444; color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 12px; flex-shrink: 0; }
+  .av-name { font-size: 12px; font-weight: 700; color: #fff; }
+  .av-role { font-size: 10px; color: #555; font-weight: 300; }
+</style>
+</head>
+<body>
+
+<div class="page-label">Nde Julius · <span>Day 6 Goal</span> · Week 2 Begins</div>
+
+<div class="card">
+  <div class="grid"></div>
+  <div class="big-num">6</div>
+
+  <!-- TOP -->
+  <div class="top">
+    <div class="tag">
+      <div class="dot"></div>
+      STAGE 0 · WEEK 2 · MON · TODAY'S GOAL
+    </div>
+  </div>
+
+  <!-- MIDDLE -->
+  <div class="mid">
+
+    <!-- WEEK BADGE -->
+    <div class="week-badge">🚀 WEEK 2 BEGINS</div>
+
+    <!-- TITLE -->
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#444; letter-spacing:2px; margin-bottom:4px;">MECHATRONICS JOURNEY · DAY</div>
+      <div style="font-family:'Bebas Neue',sans-serif; font-size:78px; line-height:0.85; letter-spacing:2px; color:#fff;">SIX<br><span style="color:#ef4444;">06</span></div>
+      <div style="font-family:'Bebas Neue',sans-serif; font-size:30px; color:#fff; letter-spacing:3px; line-height:1.1; margin-top:6px;">POINTERS<br><span style="color:#ef4444;">IN C</span></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; margin-top:6px; line-height:1.7;">The most important concept in embedded C<br>Memory addresses · dereferencing · pass-by-ref</div>
+    </div>
+
+    <!-- CONCEPT BOX -->
+    <div class="concept-box">
+      <div class="concept-title">What You'll Learn</div>
+      <div class="concept-row"><span>&</span> address-of operator — get memory address</div>
+      <div class="concept-row"><span>*</span> dereference — read/write value at address</div>
+      <div class="concept-row"><span>int*</span> pointer variable — stores an address</div>
+      <div class="concept-row"><span>fn</span> pass-by-reference — modify original variable</div>
+      <div class="concept-row"><span>[]</span> pointer + array — how arrays really work</div>
+    </div>
+
+    <!-- PROGRAMS -->
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#444; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;">Today's Programs</div>
+      <div class="prog-list">
+        <div class="prog-item">
+          <div class="prog-num">1</div>
+          <div><div class="prog-text">Print address of a variable</div><div class="prog-sub">int x · printf("%p", &x)</div></div>
+          <div class="prog-arrow">→</div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-num">2</div>
+          <div><div class="prog-text">Pointer declaration & dereference</div><div class="prog-sub">int *p = &x · *p to read/write</div></div>
+          <div class="prog-arrow">→</div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-num">3</div>
+          <div><div class="prog-text">Swap two numbers with pointers</div><div class="prog-sub">pass-by-reference function</div></div>
+          <div class="prog-arrow">→</div>
+        </div>
+        <div class="prog-item" style="border-color:rgba(239,68,68,0.2); background:rgba(239,68,68,0.05);">
+          <div class="prog-num" style="color:rgba(239,68,68,0.6);">4</div>
+          <div><div class="prog-text" style="color:#fca5a5;">Pointer + array traversal 🔥</div><div class="prog-sub">use pointer to loop through array</div></div>
+          <div class="prog-arrow" style="color:#ef4444;">🔥</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIME -->
+    <div class="time-block">
+      <div class="time-title">⏱ 3-Hour Block</div>
+      <div class="time-row">0:00 – 0:30 <span>Review Week 1 notes</span></div>
+      <div class="time-row">0:30 – 1:30 <span>Theory · Pointers deeply</span></div>
+      <div class="time-row">1:30 – 2:45 <span>Code all 4 programs</span></div>
+      <div class="time-row">2:45 – 3:00 <span>Log + screenshot</span></div>
+    </div>
+
+    <!-- WARNING -->
+    <div class="warn-box">
+      <strong>⚠️ POINTER WARNING</strong>
+      Pointers are where most beginners get confused. Take it slow. Draw memory diagrams on paper. Understand & and * before moving on.
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-v" style="color:#ef4444;">WK2</div>
+        <div class="stat-l">Day 1</div>
+      </div>
+      <div class="stat">
+        <div class="stat-v" style="color:#10b981;">55</div>
+        <div class="stat-l">Days Left</div>
+      </div>
+      <div class="stat">
+        <div class="stat-v" style="color:#f59e0b;">S0</div>
+        <div class="stat-l">Stage 0</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM -->
+  <div class="bot">
+    <div class="author">
+      <div class="av">NJ</div>
+      <div>
+        <div class="av-name">Nde Julius</div>
+        <div class="av-role">Physics → Mechatronics · Day 6 of 60</div>
+      </div>
+      <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">#Day6</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

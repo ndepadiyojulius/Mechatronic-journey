@@ -1,0 +1,17 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int main()
+{
+    int a;
+    printf("Enter a number\n");
+    scanf("%d",&a);
+    int result=a%2;
+    if(result=a%2){
+    printf("the number is odd");
+    }
+    else{
+     printf("the number is even"); 
+    }
+    return 0;
+}

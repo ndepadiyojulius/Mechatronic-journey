@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 7 Goal — Nde Julius</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #050608;
+    font-family: 'Barlow Condensed', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 60px;
+    gap: 16px;
+  }
+
+  .page-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px;
+    color: #333; text-transform: uppercase; text-align: center;
+  }
+  .page-label span { color: #10b981; }
+
+  .card {
+    width: 100%; max-width: 360px;
+    aspect-ratio: 9 / 16;
+    border-radius: 20px; overflow: hidden;
+    position: relative;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    padding: 28px 24px;
+    background: #060a08;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 85% 8%, rgba(16,185,129,0.22) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 10% 92%, rgba(6,182,212,0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+
+  .big-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 280px;
+    color: rgba(16,185,129,0.05);
+    position: absolute;
+    bottom: -40px; right: -25px;
+    letter-spacing: -8px; line-height: 1;
+    pointer-events: none;
+  }
+
+  .top { z-index: 1; }
+  .mid { z-index: 1; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+  .bot { z-index: 1; }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #10b981;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #10b981; }
+
+  .struct-preview {
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; line-height: 1.8;
+  }
+
+  .kw{color:#ff7b72;} .ty{color:#10b981;} .str{color:#79c0ff;}
+  .cmt{color:#4a5568;font-style:italic;} .num{color:#f97316;}
+  .fn{color:#d2a8ff;}
+
+  .concept-box {
+    background: rgba(16,185,129,0.06);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 10px;
+    padding: 13px 15px;
+  }
+
+  .concept-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: #10b981;
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .concept-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: #888; line-height: 1.5;
+  }
+  .concept-row:last-child { border-bottom: none; }
+  .concept-row span { color: #10b981; flex-shrink: 0; }
+
+  .prog-list { display: flex; flex-direction: column; gap: 6px; }
+  .prog-item {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 7px; padding: 9px 12px;
+  }
+  .prog-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: rgba(16,185,129,0.4); width: 18px; flex-shrink: 0; line-height: 1; }
+  .prog-text { font-size: 13px; font-weight: 600; color: #ccc; line-height: 1.3; }
+  .prog-sub { font-size: 10px; color: #555; font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
+
+  .time-block { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 12px 14px; }
+  .time-title { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #10b981; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .time-row { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #555; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .time-row:last-child { border-bottom: none; }
+  .time-row span { color: #aaa; }
+
+  .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
+  .stat { background: rgba(255,255,255,0.02); border: 1px solid #1a1f2e; border-radius: 8px; padding: 10px 6px; text-align: center; }
+  .stat-v { font-family: 'Bebas Neue', sans-serif; font-size: 24px; line-height: 1; margin-bottom: 2px; }
+  .stat-l { font-family: 'JetBrains Mono', monospace; font-size: 8px; color: #444; text-transform: uppercase; letter-spacing: 1px; }
+
+  .author { display: flex; align-items: center; gap: 10px; }
+  .av { width: 30px; height: 30px; border-radius: 50%; background: #10b981; color: #000; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 12px; flex-shrink: 0; }
+  .av-name { font-size: 12px; font-weight: 700; color: #fff; }
+  .av-role { font-size: 10px; color: #555; font-weight: 300; }
+</style>
+</head>
+<body>
+
+<div class="page-label">Nde Julius · <span>Day 7 Goal</span> · Screenshot Before You Start</div>
+
+<div class="card">
+  <div class="grid"></div>
+  <div class="big-num">7</div>
+
+  <div class="top">
+    <div class="tag">
+      <div class="dot"></div>
+      STAGE 0 · WEEK 2 · TUE · TODAY'S GOAL
+    </div>
+  </div>
+
+  <div class="mid">
+
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#444; letter-spacing:2px; margin-bottom:4px;">MECHATRONICS JOURNEY · DAY</div>
+      <div style="font-family:'Bebas Neue',sans-serif; font-size:78px; line-height:0.85; letter-spacing:2px; color:#fff;">SEVEN<br><span style="color:#10b981;">07</span></div>
+      <div style="font-family:'Bebas Neue',sans-serif; font-size:30px; color:#fff; letter-spacing:3px; line-height:1.1; margin-top:6px;">STRUCTS<br><span style="color:#10b981;">IN C</span></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#555; margin-top:5px; line-height:1.7;">Group related data into one object<br>Model real-world things in code</div>
+    </div>
+
+    <!-- STRUCT PREVIEW -->
+    <div class="struct-preview">
+<span class="cmt">// A sensor as a struct</span>
+<span class="kw">struct</span> <span class="ty">Sensor</span> {
+    <span class="kw">char</span>  name[<span class="num">20</span>];
+    <span class="kw">float</span> value;
+    <span class="kw">int</span>   pin;
+};
+
+<span class="ty">struct</span> Sensor temp;
+temp.value <span class="fn">=</span> <span class="num">36.5</span>;
+<span class="fn">printf</span>(<span class="str">"%.1f"</span>, temp.value);</div>
+
+    <!-- CONCEPTS -->
+    <div class="concept-box">
+      <div class="concept-title">What You'll Learn</div>
+      <div class="concept-row"><span>struct</span> define a custom data type</div>
+      <div class="concept-row"><span>.</span> dot operator — access members</div>
+      <div class="concept-row"><span>-></span> arrow operator — pointer to struct</div>
+      <div class="concept-row"><span>typedef</span> cleaner struct naming</div>
+      <div class="concept-row"><span>[ ]</span> array of structs — list of objects</div>
+    </div>
+
+    <!-- PROGRAMS -->
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#444; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;">Today's Programs</div>
+      <div class="prog-list">
+        <div class="prog-item">
+          <div class="prog-num">1</div>
+          <div><div class="prog-text">Basic struct — Student</div><div class="prog-sub">name, age, grade · dot access</div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-num">2</div>
+          <div><div class="prog-text">typedef struct — cleaner syntax</div><div class="prog-sub">typedef struct Motor { } Motor;</div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-num">3</div>
+          <div><div class="prog-text">Array of structs</div><div class="prog-sub">3 students · loop + print all</div></div>
+        </div>
+        <div class="prog-item" style="border-color:rgba(16,185,129,0.2); background:rgba(16,185,129,0.05);">
+          <div class="prog-num" style="color:rgba(16,185,129,0.6);">4</div>
+          <div><div class="prog-text" style="color:#6ee7b7;">Sensor struct 🔥</div><div class="prog-sub">model a real embedded sensor</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIME -->
+    <div class="time-block">
+      <div class="time-title">⏱ 3-Hour Block</div>
+      <div class="time-row">0:00 – 0:30 <span>Review pointers</span></div>
+      <div class="time-row">0:30 – 1:30 <span>Theory · Structs deeply</span></div>
+      <div class="time-row">1:30 – 2:45 <span>Code all 4 programs</span></div>
+      <div class="time-row">2:45 – 3:00 <span>Log + screenshot</span></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-v" style="color:#10b981;">WK2</div>
+        <div class="stat-l">Day 2</div>
+      </div>
+      <div class="stat">
+        <div class="stat-v" style="color:#ef4444;">54</div>
+        <div class="stat-l">Days Left</div>
+      </div>
+      <div class="stat">
+        <div class="stat-v" style="color:#f59e0b;">S0</div>
+        <div class="stat-l">Stage 0</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bot">
+    <div class="author">
+      <div class="av">NJ</div>
+      <div>
+        <div class="av-name">Nde Julius</div>
+        <div class="av-role">Physics → Mechatronics · Day 7 of 60</div>
+      </div>
+      <div style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px; color:#333;">#Day7</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
